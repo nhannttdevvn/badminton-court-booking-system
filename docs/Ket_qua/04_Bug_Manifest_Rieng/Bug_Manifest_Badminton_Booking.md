@@ -1,245 +1,51 @@
-# DANH SÁCH LỖI CÀI SẴN (BUG MANIFEST)
-## [TÀI LIỆU NỘP RIÊNG CHO GIẢNG VIÊN – THEO MẪU 02]
-### HỆ THỐNG ĐẶT SÂN CẦU LÔNG TRỰC TUYẾN (BADMINTON COURT BOOKING SYSTEM)
+# DANH MỤC LỖI CÀI SẴN VÀ KỊCH BẢN LỖI (BUG MANIFEST)
+## [TÀI LIỆU LƯU RIÊNG BẢO MẬT – CHỈ NỘP GIẢNG VIÊN HƯỚNG DẪN]
+### HỆ THỐNG ĐẶT SÂN CẦU LÔNG (BADMINTON COURT BOOKING SYSTEM)
+**Phiên bản**: v2.0 (Cập nhật ngày 21/10/2026 theo phạm vi mới)  
+**Phạm vi hệ thống**: 1 Vai trò Nhân viên – 5 Chức năng (`FR-01` đến `FR-05`)  
 
 > [!CAUTION]
-> **BẢO MẬT HỌC THUẬT**: Tài liệu này là bí mật của Chủ hệ thống nộp riêng cho Giảng viên hướng dẫn vào Tuần 6. **TUYỆT ĐỐI KHÔNG GỬI CHO TESTER (BẠN CẶP)**. Theo quy chế học phần tại `TAILIEU/Tieu_chi_cham_diem.docx`, việc tiết lộ Bug Manifest cho Tester sẽ bị coi là gian lận (0 điểm phần liên quan).
-
-> [!WARNING]
-> **XÁC NHẬN HIỆN TRẠNG MÃ NGUỒN THEO NGUYÊN TẮC KHÔNG BỊA ĐẶT**:
-> - **Hiện trạng mã nguồn thực tế**: Mã nguồn hiện tại trong `backend/` và `frontend/` mới hoàn thành tầng Baseline sạch, **CHƯA CẤY BẤT KỲ LỖI CÀI SẴN NÀO VÀO MÃ NGUỒN (0/15 lỗi trong code)**.
-> - **Bản chất của tài liệu này**: Đây là **BẢN THIẾT KẾ KỊCH BẢN 15 LỖI DỰ KIẾN CẤY VÀO MÃ NGUỒN** khi lập trình các module tiếp theo.
-> - **Bằng chứng video / ảnh chụp**: Hiện tại **CHƯA CÓ VIDEO HOẶC ẢNH CHỤP THỰC TẾ** do mã nguồn chưa được cấy lỗi và chưa deploy lên môi trường staging. Cột "Bằng chứng" ghi rõ trạng thái `[Chờ cấy code & ghi hình khi deploy]`.
+> **QUY ĐỊNH BẢO MẬT HỌC THUẬT**:
+> - Tài liệu này là **TÀI LIỆU RIÊNG BIỆT**, tuyệt đối **KHÔNG ĐƯỢC ĐƯA VÀO BỘ HỒ SƠ BÀN GIAO CHO TESTER (BẠN CẶP)** để đảm bảo tính khách quan và trung thực khi kiểm thử độc lập.
+> - **NGUYÊN TẮC TRUNG THỰC**: Do mã nguồn các module nghiệp vụ của hệ thống hiện đang ở giai đoạn thiết kế (mã nguồn thực tế mới có tầng Baseline `GET /api/health`), **TOÀN BỘ 13 LỖI DƯỚI ĐÂY LÀ KỊCH BẢN THIẾT KẾ ĐƯỢC CHUẨN BỊ SẴN**, gắn nhãn rõ ràng: `Thiết kế — chưa xác nhận tồn tại`. Tuyệt đối không điền kết quả thực tế giả mạo, không bịa đặt video hay ảnh chụp màn hình khi chưa cấy vào mã nguồn chạy thật.
 
 ---
 
-## 1. Bảng tự kiểm tra số lượng lỗi (Đối chiếu Mẫu 02)
+## 1. Định nghĩa và Phân định 2 nhóm lỗi
 
-| Tiêu chí phân loại | Số lượng yêu cầu tối thiểu | Số lượng đã có trong code thực tế | Số lượng kịch bản đã thiết kế | Trạng thái đối chuẩn |
-| :--- | :---: | :---: | :---: | :---: |
-| **Functional (Chức năng)** | 5 | 0 | 5 | Đã thiết kế đủ 5 kịch bản (Chờ cấy code) |
-| **Visual (Hiển thị)** | 3 | 0 | 3 | Đã thiết kế đủ 3 kịch bản (Chờ cấy code) |
-| **Content (Nội dung / Chính tả)** | 3 | 0 | 3 | Đã thiết kế đủ 3 kịch bản (Chờ cấy code) |
-| **Performance (Hiệu năng / Tải)**| 2 | 0 | 2 | Đã thiết kế đủ 2 kịch bản (Chờ cấy code) |
-| **Crash (Sập ứng dụng / Treo trang)**| 2 | 0 | 2 | Đã thiết kế đủ 2 kịch bản (Chờ cấy code) |
-| **TỔNG SỐ LỖI** | **15** | **0** | **15** | **ĐÃ THIẾT KẾ ĐỦ 15/15 KỊCH BẢN** |
-| **Mức Critical + Major** | **3** | **0** | **4** | **ĐÃ THIẾT KẾ 4/3 KỊCH BẢN CRIT/MAJOR** |
+1. **Nhóm 1 – 10 Lỗi liên quan trực tiếp đến Yêu cầu đã đặc tả (Lỗi đặc tả)**:
+   - Là lỗi hành vi của phần mềm vi phạm trực tiếp một điều khoản hoặc quy tắc nghiệp vụ đã được nêu rõ ràng trong tài liệu đặc tả [SRS_Badminton_Court_Booking.md](file:///Users/vanhuy/Desktop/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/Ket_qua/02_SRS/SRS_Badminton_Court_Booking.md).
+   - *(Lưu ý: Đây KHÔNG PHẢI là lỗi gõ chữ hay lỗi chính tả trong văn bản tài liệu SRS)*.
+2. **Nhóm 2 – 03 Lỗi ngoài đặc tả (Vấn đề cần xác nhận)**:
+   - Là các vấn đề bất thường hoặc khiếm khuyết về tính tiện dụng, chuẩn vận hành hoặc hành vi biên quan sát được trong quá trình sử dụng hệ thống nhưng **chưa có điều khoản yêu cầu tương ứng trong SRS**.
+   - Cần nguồn căn cứ kỳ vọng độc lập để phân tích; được gắn nhãn là `"Vấn đề cần xác nhận"`, không tự khẳng định là lỗi đã được công nhận hay được cộng điểm.
 
 ---
 
-## 2. Danh mục 15 kịch bản lỗi cài sẵn thiết kế theo nghiệp vụ sân cầu lông
+## 2. BẢNG 1: DANH SÁCH 10 LỖI LIÊN QUAN TRỰC TIẾP ĐẾN ĐẶC TẢ SRS
+
+| ID | Nhóm lỗi | Chức năng / Màn hình | Yêu cầu SRS bị vi phạm | Tiền điều kiện | Dữ liệu thử nghiệm | Các bước tái hiện lỗi | Kết quả mong đợi (Theo SRS) | Kết quả thực tế | Mức nghiêm trọng & Lý do | Bằng chứng | Trạng thái |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: |
+| **`BUG-SPEC-01`** | Functional (Concurrency) | `FR-04`: Đặt sân | Vi phạm `FR-04 (Mục 5, 6)` và `NFR-01`: Tính toàn vẹn chống Double Booking | Cụm sân có Sân 1, slot 18:00-19:00 đang trống (Màu xanh). 2 nhân viên cùng đăng nhập. | Court 1, Date: 2026-10-22, Slot: 18:00-19:00. NV1: Khách A (0912345678), NV2: Khách B (0987654321). | 1. NV1 và NV2 cùng mở lịch ngày 2026-10-22.<br>2. Cả hai cùng bấm chọn slot 18:00 Sân 1.<br>3. Cả hai cùng bấm "Xác nhận đặt" gần như đồng thời (cách nhau < 100ms). | Đúng 1 nhân viên đặt thành công (HTTP 201); nhân viên còn lại bị chặn với lỗi HTTP 409 Conflict và thông báo slot đã có người đặt. | *[Thiết kế kịch bản: Server không dùng `FOR UPDATE`, dẫn đến 2 bản ghi tạo trùng nhau vào DB]* | **Critical**: Lỗi trùng lịch gây tranh chấp trực tiếp giữa hai khách tại sân. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-02`** | Functional | `FR-05`: Hủy đặt sân | Vi phạm `FR-05 (Mục 5, 7)`: Tự động giải phóng slot sang màu xanh tức thời sau khi hủy | Đã có một đơn đặt sân hiệu lực tại Sân 2, slot 09:00-10:00 (ô màu đỏ). | Booking ID: 101 (Sân 2, 09:00-10:00). | 1. Nhân viên bấm vào ô đỏ Sân 2 lúc 09:00.<br>2. Bấm nút "Hủy đặt sân" và xác nhận đồng ý trên popup. | Backend cập nhật trạng thái đơn thành CANCELLED; ô slot trên bảng lịch lập tức đổi màu sang Xanh lục (Còn trống). | *[Thiết kế kịch bản: Backend cập nhật DB thành công nhưng Frontend không cập nhật state, ô lịch vẫn giữ màu đỏ]* | **Major**: Nhân viên tưởng sân vẫn có người đặt nên không thể nhận khách mới vào khung giờ này. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-03`** | Functional | `FR-04`: Đặt sân | Vi phạm `FR-04 (Mục 6 - Ngoại lệ E3)`: Ngăn chặn đặt sân trong quá khứ | Ngày hiện tại hệ thống là 2026-10-21. | Booking Date: 2026-10-15 (Quá khứ), Slot: 08:00-09:00. | 1. Nhân viên đổi Date Picker về ngày 2026-10-15 trong quá khứ.<br>2. Bấm chọn slot và điền thông tin khách.<br>3. Bấm "Xác nhận đặt". | Hệ thống hiển thị cảnh báo lỗi và chặn không cho phép gửi request đặt sân cho ngày quá khứ. | *[Thiết kế kịch bản: Hệ thống bỏ qua validation ngày, tạo thành công đơn đặt sân cho ngày quá khứ]* | **Major**: Sai lệch dữ liệu vận hành và phá vỡ tính hợp lệ của lịch sử đặt sân. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-04`** | Functional | `FR-01`: Đăng ký tài khoản | Vi phạm `FR-01 (Mục 6 - Ngoại lệ E3)`: Kiểm tra trùng lặp số điện thoại nhân viên | SĐT `0901112223` đã tồn tại trong bảng `users`. | SĐT: `0901112223`, Tên: "Nhân viên B", Pass: `Staff@123`. | 1. Mở trang Đăng ký tài khoản nhân viên.<br>2. Nhập SĐT `0901112223` đã tồn tại.<br>3. Bấm nút "Đăng ký". | Hệ thống trả về mã lỗi HTTP 400 Bad Request và thông báo: `"Số điện thoại này đã được đăng ký tài khoản nhân viên"`. | *[Thiết kế kịch bản: Server không bắt lỗi Unique Key của MySQL, văng lỗi 500 sập kết nối]* | **Major**: Trải nghiệm tồi tệ cho người dùng và làm lộ lỗi nội bộ server. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-05`** | Security / Auth | Phân quyền API (`FR-04`, `FR-05`) | Vi phạm `SRS Mục 2.2` (Ma trận phân quyền) và `FR-04/05`: Bắt buộc quyền Nhân viên | Người dùng chưa đăng nhập, không có Token Authorization. | Request: `POST /api/bookings` kèm body JSON đặt sân hợp lệ, không có header `Authorization`. | 1. Sử dụng công cụ Postman gửi request `POST /api/bookings` mà không kèm Bearer Token. | Hệ thống từ chối request với mã lỗi HTTP 401 Unauthorized: `"Vui lòng đăng nhập để tiếp tục"`. | *[Thiết kế kịch bản: Route backend quên gắn middleware xác thực `authMiddleware`, request vẫn được xử lý 201]* | **Critical**: Lỗ hổng bảo mật nghiêm trọng cho phép bất kỳ ai bên ngoài cũng can thiệp đặt/xóa sân. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-06`** | Visual (Responsive) | `FR-03`: Xem lịch đặt sân | Vi phạm `SRS Mục 4.1 (Khoản 3, 4)`: Chống cuộn ngang toàn trang trên thiết bị di động | Sử dụng thiết bị di động (chiều rộng màn hình 375px). Đã đăng nhập. | Viewport: 375 × 812 px (iPhone 13). | 1. Mở màn hình Xem lịch đặt sân trên màn hình 375px.<br>2. Quan sát bố cục trang và thanh cuộn. | Bảng lịch có thanh cuộn ngang riêng biệt bên trong vùng chứa bảng; thanh điều hướng và toàn bộ trang web không bị phát sinh cuộn ngang toàn trang. | *[Thiết kế kịch bản: Bảng lịch bị set `width: 1200px` cố định không có `overflow-x: auto`, làm vỡ toàn bộ trang]* | **Minor**: Gây khó khăn cho nhân viên khi thao tác bằng điện thoại tại sân. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-07`** | Visual (Responsive) | `FR-04`: Đặt sân | Vi phạm `SRS Mục 4.1 (Khoản 5)`: Hộp thoại (Modal) phải nằm trong vùng nhìn | Sử dụng thiết bị di động nhỏ (chiều rộng 320px). Đang mở modal Đặt sân. | Viewport: 320 × 568 px (iPhone SE). | 1. Chọn 1 slot trống trên màn hình 320px.<br>2. Bấm "Đặt sân" để mở modal nhập thông tin. | Modal hiển thị căn giữa, toàn bộ form và nút "Xác nhận đặt" nằm trọn vẹn trong màn hình, không bị tràn viền. | *[Thiết kế kịch bản: Modal có `min-width: 400px`, dẫn đến tràn ra ngoài mép phải màn hình 320px]* | **Major**: Nhân viên dùng máy nhỏ không bấm được nút "Xác nhận đặt". | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-08`** | Functional | `FR-05`: Hủy đặt sân | Vi phạm `FR-05 (Mục 5 - Bước 4)`: Bắt buộc hiển thị popup xác nhận trước khi hủy | Đang chọn một đơn đặt sân hiệu lực. | Booking ID: 102. | 1. Bấm vào slot đã đặt (ô màu đỏ).<br>2. Bấm vào nút "Hủy đặt sân". | Hệ thống bắt buộc hiển thị hộp thoại cảnh báo: `"Bạn có chắc chắn muốn hủy lượt đặt sân này không?"` với 2 nút lựa chọn. | *[Thiết kế kịch bản: Bấm nút Hủy thì hệ thống lập tức xóa đơn ngay mà không hỏi lại xác nhận]* | **Minor**: Dễ dẫn đến hủy nhầm do nhân viên sơ suất bấm trượt tay. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-09`** | Content / Visual | `FR-03`: Xem lịch đặt sân | Vi phạm `FR-03 (Mục 5)`: Nhãn trạng thái ô slot | Trên bảng lịch có các slot đã đặt. | Slot 14:00 Sân 3 đã đặt. | 1. Mở màn hình lịch ngày có đơn đặt sân.<br>2. Rà chuột hoặc nhìn vào ô slot màu đỏ. | Ô hiển thị nhãn rõ ràng: `"Đã đặt"` hoặc tên khách đặt. | *[Thiết kế kịch bản: Ô slot hiển thị nhãn dịch sai: "Waiting..." hoặc để trống trơn không có nhãn]* | **Trivial**: Ảnh hưởng đến thẩm mỹ và tính rõ ràng của giao diện. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-SPEC-10`** | Performance | `FR-03`: Xem lịch đặt sân | Vi phạm `NFR-02`: Thời gian phản hồi API tra cứu lịch P90 ≤ 1000ms | 20 người dùng đồng thời gọi API tải lịch. | 20 Virtual Users, gọi `GET /api/slots/availability?date=2026-10-22`. | 1. Chạy kịch bản tải JMeter với 20 users đồng thời truy cập xem lịch ngày cao điểm. | Thời gian đáp ứng phân vị 90% (P90) phải nhỏ hơn hoặc bằng 1000ms; không bị nghẽn CPU. | *[Thiết kế kịch bản: Backend query theo kiểu N+1 lồng nhau, P90 vượt ngưỡng 3500ms]* | **Major**: Gây đơ giật hệ thống khi nhiều nhân viên cùng mở xem lịch vào giờ cao điểm. | `[Chờ cấy code & quay video khi deploy]` | Thiết kế — chưa xác nhận tồn tại |
 
 ---
 
-### Phân nhóm 1: Kịch bản Lỗi Chức năng (Functional - 5 kịch bản)
+## 3. BẢNG 2: DANH SÁCH 03 LỖI NGOÀI ĐẶC TẢ (VẤN ĐỀ CẦN XÁC NHẬN)
 
-#### 1. `SEED-01`
-- **Loại lỗi**: Functional
-- **Mức nghiêm trọng**: **Major**
-- **Chức năng / Luồng liên quan**: `FR-10` / `FLOW-02` (Hủy đặt sân tự phục vụ)
-- **Vị trí dự kiến**: Giao diện Lịch sử đặt sân; API `POST /api/bookings/:id/cancel`
-- **Yêu cầu SRS bị vi phạm**: `FR-10` quy định: *"Chỉ cho phép khách hàng hủy đơn đặt sân trước giờ bắt đầu chơi tối thiểu 24 giờ. Nếu dưới 24 giờ, hệ thống bắt buộc chặn hủy và báo lỗi ERR_CANCEL_TOO_LATE"*.
-- **Mô tả kịch bản lỗi cấy**: Logic kiểm tra thời gian sử dụng toán tử sai (dùng `<` thay vì `>=` hoặc so sánh nhầm đơn vị), khiến hệ thống vẫn cho phép khách hàng hủy thành công đơn đặt sân khi thời gian bắt đầu chỉ còn 2 giờ.
-- **Các bước tái hiện dự kiến**:
-  1. Đăng nhập tài khoản khách hàng.
-  2. Tạo đơn đặt sân bắt đầu sau 2 tiếng nữa.
-  3. Mở mục Lịch sử đặt sân, bấm "Hủy đơn" và bấm xác nhận.
-- **Kết quả mong đợi (theo SRS)**: Báo lỗi `400 Bad Request`: "Không thể hủy sân trước giờ chơi dưới 24 giờ".
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Trả về `200 OK`, đơn bị hủy và giải phóng slot.
-- **Bằng chứng**: `Chưa có — chờ cấy code và ghi hình thực tế khi deploy`
-- **File dự kiến chứa lỗi**: `backend/src/controllers/bookingController.js` (Hàm `cancelBooking`)
-- **Ghi chú**: Lỗi logic thời gian nghiệp vụ.
+> [!NOTE]
+> Các mục dưới đây là những bất thường hoặc khiếm khuyết được quan sát dựa trên căn cứ trải nghiệm thực tế nhưng **chưa có điều khoản yêu cầu tương ứng trong SRS v2.0**. Các mục này được ghi nhận trung thực dưới bản chất là **VẤN ĐỀ CẦN XÁC NHẬN**, tuyệt đối không tự nhận là lỗi được cộng điểm hoặc đã được Giảng viên công nhận.
 
-#### 2. `SEED-02`
-- **Loại lỗi**: Functional
-- **Mức nghiêm trọng**: **Critical**
-- **Chức năng / Luồng liên quan**: `FR-07`, `FR-08` / `FLOW-01` (Khóa slot & Đặt sân)
-- **Vị trí dự kiến**: API `POST /api/bookings/hold` và `POST /api/bookings/confirm`
-- **Yêu cầu SRS bị vi phạm**: `NFR-04` & `FR-07` quy định: *"Tỷ lệ xảy ra trùng lịch (Double Booking) = đúng 0%. Cơ chế khóa slot phải đảm bảo khi 2 user cùng đặt 1 slot, chỉ 1 người thành công, người còn lại nhận lỗi 409 Conflict"*.
-- **Mô tả kịch bản lỗi cấy**: Bỏ qua mệnh đề `FOR UPDATE` trong câu truy vấn MySQL hoặc không dùng Database Transaction, dẫn đến hiện tượng Race Condition: hai người dùng đặt cùng một khung giờ tại cùng thời điểm đều được tạo đơn `CONFIRMED`.
-- **Các bước tái hiện dự kiến**:
-  1. Mở 2 phiên gửi đồng thời 2 request đặt cùng 1 slot sân tại cùng 1 thời điểm.
-- **Kết quả mong đợi (theo SRS)**: 1 request thành công 201, 1 request nhận 409 Conflict.
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Cả 2 request đều nhận 201 Created, gây trùng lịch.
-- **Bằng chứng**: `Chưa có — chờ cấy code và ghi hình thực tế khi deploy`
-- **File dự kiến chứa lỗi**: `backend/src/services/bookingService.js` (Hàm `holdSlotTransaction`)
-- **Ghi chú**: Lỗi nghiêm trọng về toàn vẹn dữ liệu.
-
-#### 3. `SEED-03`
-- **Loại lỗi**: Functional
-- **Mức nghiêm trọng**: Minor
-- **Chức năng / Luồng liên quan**: `FR-08` (Ràng buộc số lượng slot)
-- **Vị trí dự kiến**: API `POST /api/bookings/confirm`
-- **Yêu cầu SRS bị vi phạm**: `FR-08` quy định: *"Một khách hàng chỉ được phép chọn đặt từ 1 đến tối đa 4 slot trong cùng một ngày"*.
-- **Mô tả kịch bản lỗi cấy**: Bỏ sót kiểm tra điều kiện mảng `slotIds.length <= 4` ở backend, cho phép khách gửi request đặt 5 slot liên tiếp trong ngày vẫn tạo đơn thành công.
-- **Các bước tái hiện dự kiến**:
-  1. Gửi request body chứa mảng 5 `slotIds` liên tiếp trong ngày.
-- **Kết quả mong đợi (theo SRS)**: Báo lỗi 400 validation: "Không được đặt quá 4 slot trong một ngày".
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Hệ thống tạo đơn thành công cho cả 5 khung giờ.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình Postman`
-- **File dự kiến chứa lỗi**: `backend/src/validators/bookingValidator.js`
-- **Ghi chú**: Lỗi vi phạm phân tích giá trị biên (BVA).
-
-#### 4. `SEED-04`
-- **Loại lỗi**: Functional
-- **Mức nghiêm trọng**: Minor
-- **Chức năng / Luồng liên quan**: `FR-05` (Bảng quyết định tính giá tiền)
-- **Vị trí dự kiến**: API `POST /api/bookings/calculate-price`
-- **Yêu cầu SRS bị vi phạm**: Bảng quyết định `SRS 4.1` quy định: *"Toàn bộ ngày Thứ 7 và Chủ Nhật (cuối tuần) đều phải áp dụng Giá giờ cao điểm, kể cả khung giờ buổi sáng"*.
-- **Mô tả kịch bản lỗi cấy**: Hàm kiểm tra cuối tuần chỉ kiểm tra Thứ 7 (`dayOfWeek === 6`), bỏ sót Chủ Nhật (`dayOfWeek === 0`), khiến khung giờ sáng Chủ Nhật bị tính nhầm thành giá giờ thường.
-- **Các bước tái hiện dự kiến**:
-  1. Chọn ngày Chủ Nhật, chọn slot 08:00 - 09:00 sáng.
-  2. Kiểm tra tổng tiền hiển thị.
-- **Kết quả mong đợi (theo SRS)**: Áp dụng giá giờ cao điểm (ví dụ 140.000 VNĐ).
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Áp dụng nhầm giá giờ thường (ví dụ 80.000 VNĐ).
-- **Bằng chứng**: `Chưa có — chờ cấy code và ghi hình thực tế`
-- **File dự kiến chứa lỗi**: `backend/src/utils/pricingCalculator.js`
-- **Ghi chú**: Lỗi logic bảng quyết định.
-
-#### 5. `SEED-05`
-- **Loại lỗi**: Functional
-- **Mức nghiêm trọng**: **Major**
-- **Chức năng / Luồng liên quan**: `FR-02`, Ma trận phân quyền RBAC
-- **Vị trí dự kiến**: API `PUT /api/courts/:courtId` (Cập nhật thông tin và giá sân)
-- **Yêu cầu SRS bị vi phạm**: Ma trận phân quyền `SRS 4.2` quy định: *"Chỉ tài khoản ADMIN mới có quyền sửa đổi thông tin sân và bảng giá. Tài khoản STAFF gọi API này bắt buộc phải bị chặn với mã lỗi 403 Forbidden"*.
-- **Mô tả kịch bản lỗi cấy**: Middleware phân quyền viết điều kiện lỏng lẻo `if (user.role === 'ADMIN' || user.role === 'STAFF')`, khiến tài khoản Staff vẫn có thể gửi request đổi giá sân thành công.
-- **Các bước tái hiện dự kiến**:
-  1. Đăng nhập tài khoản Staff, lấy token.
-  2. Gửi request `PUT /api/courts/CRT-01` sửa giá sân.
-- **Kết quả mong đợi (theo SRS)**: Trả về `403 Forbidden`.
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Trả về `200 OK`, giá sân bị thay đổi.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình Postman`
-- **File dự kiến chứa lỗi**: `backend/src/middlewares/authMiddleware.js`
-- **Ghi chú**: Lỗi ma trận phân quyền RBAC.
-
----
-
-### Phân nhóm 2: Kịch bản Lỗi Hiển thị (Visual - 3 kịch bản)
-
-#### 6. `SEED-06`
-- **Loại lỗi**: Visual
-- **Mức nghiêm trọng**: Minor
-- **Chức năng / Luồng liên quan**: `FR-06` (Lưới Timeline trên di động)
-- **Vị trí dự kiến**: Màn hình Đặt sân trên thiết bị di động (375×812 px)
-- **Yêu cầu SRS bị vi phạm**: `NFR-06` quy định: *"Giao diện phải thích ứng chuẩn xác trên độ phân giải điện thoại 375×812 px, bảng lịch sân không bị tràn viền (Horizontal Overflow)"*.
-- **Mô tả kịch bản lỗi cấy**: Lưới Timeline bị cố định chiều rộng `min-width: 900px` nhưng thiếu `overflow-x: auto`, khiến trên màn hình iPhone, các khung giờ chiều tối bị đẩy ra ngoài mép màn hình và không cuộn được.
-- **Các bước tái hiện dự kiến**: Mở Chrome DevTools giả lập 375×812 px, mở bảng lịch sân.
-- **Kết quả mong đợi (theo SRS)**: Bảng lịch co giãn vừa vặn hoặc có thanh cuộn ngang mượt mà.
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Bị tràn viền, mất các khung giờ từ 15h-22h.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình DevTools`
-- **File dự kiến chứa lỗi**: `frontend/src/components/TimelineGrid.css`
-
-#### 7. `SEED-07`
-- **Loại lỗi**: Visual
-- **Mức nghiêm trọng**: Trivial
-- **Chức năng / Luồng liên quan**: `FR-06` (Màu sắc trạng thái slot)
-- **Vị trí dự kiến**: Màu sắc trạng thái slot trên giao diện
-- **Yêu cầu SRS bị vi phạm**: `FR-06` quy định: *"Slot đã đặt (Booked) phải hiển thị màu ĐỎ rõ ràng để người dùng biết không thể chọn"*.
-- **Mô tả kịch bản lỗi cấy**: Class CSS `.slot-booked` bị gán nhầm mã màu xám nhạt trùng với màu nền bảng `#f1f5f9`, khiến ô nhìn như biến mất khỏi bảng.
-- **Các bước tái hiện dự kiến**: Mở bảng lịch xem ô slot đã có người đặt.
-- **Kết quả mong đợi (theo SRS)**: Ô hiển thị màu đỏ rõ ràng kèm chữ "Đã đặt".
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Ô bị chìm vào màu nền trắng xám.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình`
-- **File dự kiến chứa lỗi**: `frontend/src/components/SlotCard.css`
-
-#### 8. `SEED-08`
-- **Loại lỗi**: Visual
-- **Mức nghiêm trọng**: Minor
-- **Chức năng / Luồng liên quan**: `FR-08` (Modal Popup xác nhận đặt sân)
-- **Vị trí dự kiến**: Hộp thoại popup xác nhận đơn đặt
-- **Yêu cầu SRS bị vi phạm**: `NFR-06` (Trải nghiệm người dùng giao diện)
-- **Mô tả kịch bản lỗi cấy**: Thuộc tính `z-index` của Modal bị đặt thấp hơn thanh Header (`z-index: 10` so với `z-index: 100`), khiến nút "Đóng [X]" bị thanh menu che khuất hoàn toàn.
-- **Các bước tái hiện dự kiến**: Bấm nút "Đặt sân" để mở popup, thử click nút đóng.
-- **Kết quả mong đợi (theo SRS)**: Popup nằm đè lên trên tất cả thành phần và bấm đóng bình thường.
-- **Kết quả thực tế dự kiến khi cấy lỗi**: Nút đóng bị thanh menu che, không click được.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình`
-- **File dự kiến chứa lỗi**: `frontend/src/components/BookingModal.css`
-
----
-
-### Phân nhóm 3: Kịch bản Lỗi Nội dung (Content - 3 kịch bản)
-
-#### 9. `SEED-09`
-- **Loại lỗi**: Content
-- **Mức nghiêm trọng**: Trivial
-- **Chức năng / Luồng liên quan**: `FR-08` (Định dạng tiền tệ trên hóa đơn)
-- **Vị trí dự kiến**: Chi tiết đơn đặt sân
-- **Yêu cầu SRS bị vi phạm**: `SRS 1.3` quy định: *"Đơn vị tiền tệ phải hiển thị đúng chuẩn Việt Nam Đồng (VNĐ hoặc đ)"*.
-- **Mô tả kịch bản lỗi cấy**: Dùng hàm format với tiền tệ `$`, hiển thị tổng tiền là `$140000` thay vì `140.000 VNĐ`.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình`
-- **File dự kiến chứa lỗi**: `frontend/src/utils/formatCurrency.js`
-
-#### 10. `SEED-10`
-- **Loại lỗi**: Content
-- **Mức nghiêm trọng**: Trivial
-- **Chức năng / Luồng liên quan**: `FR-10` (Chính sách hủy sân)
-- **Vị trí dự kiến**: Thông báo điều kiện hủy sân trên modal hủy
-- **Yêu cầu SRS bị vi phạm**: `FR-10` quy định thời hạn hủy sân tối thiểu.
-- **Mô tả kịch bản lỗi cấy**: Nội dung ghi sai chính tả và sai con số: *"Quý khách chỉ được hũy sân chước 12 tiếng"*. Sai 2 từ chính tả tiếng Việt ("hũy", "chước") và sai con số nghiệp vụ.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình`
-- **File dự kiến chứa lỗi**: `frontend/src/components/CancelModal.jsx`
-
-#### 11. `SEED-11`
-- **Loại lỗi**: Content
-- **Mức nghiêm trọng**: Trivial
-- **Chức năng / Luồng liên quan**: `FR-01` (Thông báo validation form)
-- **Vị trí dự kiến**: Form đăng ký tài khoản
-- **Yêu cầu SRS bị vi phạm**: `FR-01` quy định ràng buộc độ dài mật khẩu.
-- **Mô tả kịch bản lỗi cấy**: Thông báo tiếng Anh sai ngữ pháp hiển thị lẫn vào giao diện tiếng Việt: *"Password must length between 8 and 32 characters"*.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình`
-- **File dự kiến chứa lỗi**: `frontend/src/validators/registerSchema.js`
-
----
-
-### Phân nhóm 4: Kịch bản Lỗi Hiệu năng (Performance - 2 kịch bản)
-
-#### 12. `SEED-12`
-- **Loại lỗi**: Performance
-- **Mức nghiêm trọng**: **Major**
-- **Chức năng / Luồng liên quan**: `FR-06` / `NFR-01` (API Tra cứu lịch sân trống)
-- **Vị trí dự kiến**: API `GET /api/slots/availability`
-- **Yêu cầu SRS bị vi phạm**: `NFR-01` quy định: *"Thời gian phản hồi P90 của API tra cứu lịch sân trống phải ≤ 1000 ms với tải 20 người dùng đồng thời"*.
-- **Mô tả kịch bản lỗi cấy**: Viết vòng lặp truy vấn cơ sở dữ liệu N+1 queries kết hợp đoạn delay `await new Promise(r => setTimeout(r, 2500))` khi tải tăng, khiến P90 khi chạy JMeter 20 thread bị kéo dài lên 3500ms – 4000ms.
-- **Bằng chứng**: `Chưa có — chờ cấy code và trích xuất HTML Dashboard JMeter khi đo thực tế`
-- **File dự kiến chứa lỗi**: `backend/src/services/slotService.js` (Hàm `getAvailability`)
-
-#### 13. `SEED-13`
-- **Loại lỗi**: Performance
-- **Mức nghiêm trọng**: Minor
-- **Chức năng / Luồng liên quan**: `FR-04` (Trang chủ & Danh sách sân)
-- **Vị trí dự kiến**: Tải ảnh sân trên trang chủ Frontend
-- **Yêu cầu SRS bị vi phạm**: `NFR-01` (Thời gian tải trang web)
-- **Mô tả kịch bản lỗi cấy**: Tải ảnh sân kích thước thô chưa nén (file PNG 4K nặng 10MB/ảnh) khiến dung lượng trang chủ vượt 50MB và tải mất trên 8 giây trên mạng di động.
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh Network tab`
-- **File dự kiến chứa lỗi**: `frontend/src/assets/courts/`
-
----
-
-### Phân nhóm 5: Kịch bản Lỗi Sập ứng dụng (Crash - 2 kịch bản)
-
-#### 14. `SEED-14`
-- **Loại lỗi**: Crash
-- **Mức nghiêm trọng**: **Critical**
-- **Chức năng / Luồng liên quan**: `FR-08` / `NFR-08` (Tạo đơn đặt sân)
-- **Vị trí dự kiến**: Backend Express Server; API `POST /api/bookings/confirm`
-- **Yêu cầu SRS bị vi phạm**: `NFR-08` quy định: *"Hệ thống phải bắt toàn bộ ngoại lệ, không để xảy ra hiện tượng sập server (Unhandled Exception Crash)"*.
-- **Mô tả kịch bản lỗi cấy**: Truy cập thuộc tính của biến `null` mà không dùng try/catch, gây `TypeError: Cannot read properties of undefined` làm văng thoát tiến trình Node.js (Exit code 1), sập toàn bộ backend.
-- **Bằng chứng**: `Chưa có — chờ cấy code và lưu file console log crash khi chạy thực tế`
-- **File dự kiến chứa lỗi**: `backend/src/controllers/bookingController.js`
-
-#### 15. `SEED-15`
-- **Loại lỗi**: Crash
-- **Mức nghiêm trọng**: **Major**
-- **Chức năng / Luồng liên quan**: `FR-03` / `US-05` (Trang Lịch sử đơn đặt sân)
-- **Vị trí dự kiến**: Frontend React; Màn hình Lịch sử đơn
-- **Yêu cầu SRS bị vi phạm**: `NFR-06` (Tính ổn định của giao diện người dùng)
-- **Mô tả kịch bản lỗi cấy**: Gọi `.map()` trên mảng `timeSlots` bị `null` mà không kiểm tra, không có React Error Boundary, gây sập trắng toàn bộ màn hình React (White Screen Crash).
-- **Bằng chứng**: `Chưa có — chờ cấy code và chụp ảnh màn hình Console lỗi đỏ`
-- **File dự kiến chứa lỗi**: `frontend/src/pages/MyBookings.jsx`
-
----
-
-## 3. Hướng dẫn lưu trữ và Bảo mật
-1. Tài liệu này được lưu trữ trong thư mục riêng `docs/Ket_qua/04_Bug_Manifest_Rieng/`, **hoàn toàn tách biệt khỏi gói tài liệu bàn giao cho Tester**.
-2. Lập trình viên sẽ sử dụng kịch bản này để cấy lỗi vào mã nguồn sau khi hoàn thành phần core business logic.
-3. Khi triển khai lên server tuần 6, lập trình viên sẽ ghi hình video minh chứng mở lại được các lỗi này để nộp riêng cho Giảng viên.
+| ID | Nhóm vấn đề | Chức năng / Màn hình | Yêu cầu bị vi phạm trong SRS | Căn cứ kỳ vọng thực tế & Tác động | Tiền điều kiện | Dữ liệu thử nghiệm | Các bước tái hiện | Kết quả kỳ vọng (Kinh nghiệm UX/Vận hành) | Kết quả quan sát thực tế dự kiến | Mức độ & Đề xuất | Trạng thái |
+| :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: |
+| **`BUG-OUTSPEC-01`** | Mobile Usability | `FR-02`: Màn hình Đăng nhập | **Chưa có yêu cầu tương ứng trong SRS** (SRS chỉ quy định form hiển thị vừa vùng nhìn khi chưa mở bàn phím) | **Căn cứ**: Tiêu chuẩn trải nghiệm form trên thiết bị di động (Mobile Form Accessibility).<br>**Tác động**: Khi bàn phím ảo bật lên, nút "Đăng nhập" bị che khuất khiến người dùng phải tự vuốt màn hình lên mới bấm được. | Thiết bị di động (iOS/Android) có bàn phím ảo. Mở trang Đăng nhập. | Nhập SĐT và Mật khẩu. | 1. Chạm vào ô nhập Mật khẩu để bàn phím ảo hiển thị.<br>2. Quan sát vị trí nút "Đăng nhập". | Trang web tự động cuộn (Scroll into view) để nút "Đăng nhập" luôn nổi lên trên bàn phím ảo giúp nhân viên bấm ngay. | *[Quan sát: Bàn phím che mất nút Đăng nhập, không tự cuộn form]* | **Vấn đề cần xác nhận**: Đề xuất bổ sung CSS/JS `scrollIntoView()` khi input focus. | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-OUTSPEC-02`** | Session Sync | Xác thực phiên (`FR-02`) | **Chưa có yêu cầu tương ứng trong SRS** (SRS chưa có điều khoản đặc tả đồng bộ trạng thái đăng xuất đa tab - Multi-tab Broadcast) | **Căn cứ**: Tiêu chuẩn an toàn phiên làm việc của nhân viên tại quầy máy tính dùng chung (Shared Terminal Security).<br>**Tác động**: Khi nhân viên mở 2 tab, tab 1 đã đăng xuất nhưng tab 2 vẫn để mở thì người khác vào máy có thể tiếp tục thao tác đặt/hủy ở tab 2. | Nhân viên mở đồng thời 2 tab trình duyệt của hệ thống. | Tab 1 và Tab 2 đều đang ở màn hình Lịch đặt sân. | 1. Ở Tab 1, nhân viên bấm "Đăng xuất".<br>2. Chuyển sang Tab 2, nhân viên bấm vào slot trống và bấm "Đặt sân". | Tab 2 lập tức phát hiện phiên làm việc đã kết thúc (qua `storage event` hoặc BroadcastChannel) và tự động khóa màn hình hoặc chuyển hướng về Login. | *[Quan sát: Tab 2 vẫn giữ Token trong bộ nhớ, tiếp tục gửi request tạo đơn thành công]* | **Vấn đề cần xác nhận**: Đề xuất bổ sung cơ chế lắng nghe sự kiện đăng xuất trên toàn bộ các tab trình duyệt. | Thiết kế — chưa xác nhận tồn tại |
+| **`BUG-OUTSPEC-03`** | Fast Data Entry | `FR-04`: Đặt sân | **Chưa có yêu cầu tương ứng trong SRS** (SRS hiện chỉ quy định SĐT là chuỗi 10 ký tự số thuần túy) | **Căn cứ**: Thói quen nhập liệu nhanh của nhân viên lễ tân khi nghe điện thoại của khách (Fast Input Tolerance).<br>**Tác động**: Khách đọc số điện thoại ngắt quãng (VD: 0901.112.223), nhân viên gõ theo thói quen thì bị form báo lỗi đỏ từ chối. | Đang mở modal Đặt sân cho khách. | SĐT khách: `0901 112 223` hoặc `0901.112.223`. | 1. Nhập SĐT có dấu cách hoặc dấu chấm phân cách.<br>2. Bấm "Xác nhận đặt sân". | Hệ thống tự động làm sạch (sanitize/trim loại bỏ dấu cách, dấu chấm) trước khi kiểm tra và lưu vào DB. | *[Quan sát: Form báo lỗi "Số điện thoại không hợp lệ", bắt nhân viên phải xóa từng ký tự lạ]* | **Vấn đề cần xác nhận**: Đề xuất bổ sung hàm chuẩn hóa chuỗi SĐT tự động phía Client/Server. | Thiết kế — chưa xác nhận tồn tại |

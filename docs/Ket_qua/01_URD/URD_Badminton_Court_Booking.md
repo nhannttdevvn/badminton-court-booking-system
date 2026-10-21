@@ -1,173 +1,130 @@
-# TÀI LIỆU YÊU CẦU NGƯỜI SỬ DỤNG
-## (User Requirements Document – URD)
-# HỆ THỐNG ĐẶT SÂN CẦU LÔNG TRỰC TUYẾN
-### Badminton Court Booking System
-**Phiên bản**: v1.0  
-**Ngày lập**: 21/10/2026  
-**Đơn vị thực hiện**: Nhóm Đồ án Học phần Đánh giá Hiệu năng Hệ thống  
-**Sinh viên biên soạn**: Chưa xác định — chưa có nguồn xác nhận (Cần bổ sung: Họ và tên, MSSV)  
-**Sinh viên phản biện / Bạn cặp**: Chưa xác định — chưa có nguồn xác nhận (Cần bổ sung: Họ và tên, MSSV bạn cặp)  
-**Trạng thái tài liệu**: **HOÀN THÀNH TỪ NGUỒN HIỆN CÓ (CÁC THAM SỐ CHƯA CÓ NGUỒN ĐƯỢC GẮN NHÃN ĐỀ XUẤT CHỜ XÁC NHẬN)**
+# TÀI LIỆU YÊU CẦU NGƯỜI DÙNG (URD)
+## HỆ THỐNG ĐẶT SÂN CẦU LÔNG (BADMINTON COURT BOOKING SYSTEM)
+### Phiên bản: v2.0 (Cập nhật ngày 21/10/2026)
+> [!NOTE]
+> **LỊCH SỬ THAY ĐỔI PHẠM VI DỰ ÁN**:  
+> Phiên bản v2.0 này **thay thế hoàn toàn bản URD v1.0 cũ** (vốn có 3 vai trò Customer, Staff, Admin và 12 User Stories).  
+> Theo quyết định điều chỉnh phạm vi ngày 21/10/2026, hệ thống được tinh gọn tập trung duy nhất vào nghiệp vụ tác nghiệp của **NHÂN VIÊN (Staff)** với **NĂM (05) chức năng cốt lõi**. Các vai trò Khách hàng, Quản trị viên và các phân hệ thanh toán, doanh thu, quản trị sân bãi đã được loại bỏ khỏi phạm vi dự án.
 
 ---
 
-## 1. Giới thiệu
+## 1. Giới thiệu và Bối cảnh
 
-### 1.1. Mục đích tài liệu
-Tài liệu Yêu cầu Người sử dụng (URD) này được xây dựng nhằm xác định bối cảnh, mục tiêu nghiệp vụ, đối tượng người dùng, các luồng quy trình công việc và danh sách User Stories cho dự án **Hệ thống Đặt sân Cầu lông Trực tuyến (Badminton Court Booking System)**. Tài liệu đóng vai trò là căn cứ nghiệp vụ gốc để xây dựng tài liệu Đặc tả Yêu cầu Phần mềm (SRS) và giúp đội ngũ kiểm thử (Tester) thiết lập tiêu chí nghiệm thu.
+### 1.1. Bối cảnh bài toán
+Tại các cụm sân cầu lông vừa và nhỏ, việc tiếp nhận yêu cầu đặt sân qua điện thoại hoặc khách đến trực tiếp tại quầy thường xuyên gặp phải tình trạng:
+- Nhân viên ghi chép sổ tay hoặc file Excel thủ công, dễ dẫn đến nhầm lẫn, trùng lịch (Double Booking).
+- Khi có nhiều nhân viên trực luân phiên giữa các ca, thông tin hủy sân hoặc dời giờ không được cập nhật tức thời khiến sân bị bỏ trống lãng phí hoặc hai khách cùng đến tranh chấp một sân.
+- Nhân viên cần một công cụ trực quan trên nền tảng web (hỗ trợ cả máy tính tại quầy và điện thoại di động) để tra cứu nhanh tình trạng sân theo thời gian thực, thực hiện đặt sân cho khách và hủy lịch đặt một cách chính xác, minh bạch.
 
-### 1.2. Phạm vi hệ thống
-Hệ thống quản lý cụm sân cầu lông tập trung vào các phạm vi sau (theo `README.md`):
-- **Trong phạm vi (In-Scope)**:
-  - Cho phép khách hàng tìm kiếm sân theo ngày, khung giờ, chi nhánh và loại sân (sân thảm tiêu chuẩn, sân VIP).
-  - Đặt sân trực tuyến, thanh toán hoặc giữ chỗ tạm thời trong thời gian xác nhận, nhận thông báo xác nhận.
-  - Hủy lịch đặt sân trực tuyến tự phục vụ theo chính sách thời gian quy định của sân.
-  - Hỗ trợ nhân viên xem lịch đặt tổng quan theo Timeline, tiếp đón, check-in/check-out khi khách đến sân, và tạo lịch đặt sân trực tiếp tại quầy cho khách vãng lai.
-  - Cung cấp trang quản trị cho Admin: quản lý danh mục sân, cấu hình bảng giá theo khung giờ (giờ thường / giờ vàng / cuối tuần), quản lý tài khoản & phân quyền, xem báo cáo doanh thu, tỷ lệ lấp đầy sân và cấu hình chính sách hệ thống (thời gian hủy sân tối thiểu, tỷ lệ cọc/hoàn tiền).
-- **Ngoài phạm vi (Out-of-Scope)**:
-  - Tích hợp cổng thanh toán trực tiếp ngân hàng thực tế (sử dụng phương thức giả lập thanh toán hoặc thanh toán chuyển khoản thủ công / tiền mặt tại quầy).
-  - Quản lý kho hàng dụng cụ thể thao chuyên sâu (bán vợt, nước uống, đan lưới vợt).
-
-### 1.3. Từ điển thuật ngữ
-| Thuật ngữ | Tiếng Anh tương đương | Định nghĩa trong hệ thống | Nguồn xác nhận |
-| :--- | :--- | :--- | :--- |
-| **Sân (Court)** | Court | Một sân cầu lông tiêu chuẩn có tên định danh riêng (ví dụ: Sân 1, Sân 2, Sân VIP). | `README.md` (Mục 2.1) |
-| **Khung giờ (Slot)** | Time Slot | Đơn vị thời gian cho thuê sân. *[Đề xuất chờ xác nhận: 60 phút/slot — chưa có nguồn xác nhận chính thức]*. | `README.md` (Mục 4.1) |
-| **Khóa tạm thời (Hold slot)** | Temporary Hold | Trạng thái hệ thống giữ chỗ một slot trong quá trình xác nhận, ngăn chặn người khác đặt trùng. *[Đề xuất chờ xác nhận: thời gian giữ chỗ 10 phút — chưa có nguồn xác nhận chính thức]*. | `README.md` (Mục 4.1) |
-| **Giờ cao điểm (Giờ vàng)** | Peak Hours | Khung giờ có nhu cầu cao áp dụng mức giá cao hơn. *[Đề xuất chờ xác nhận: 17:00 - 22:00 ngày thường và cuối tuần — chưa có nguồn xác nhận chính thức]*. | `README.md` (Mục 2.3, 4.3) |
-| **Trùng lịch (Double Booking)** | Double Booking | Hiện tượng lỗi nghiệp vụ khi 2 khách hàng cùng đặt thành công một sân tại cùng một khung giờ. | `README.md` (Mục 1, 5) |
-| **Khách hàng** | Customer | Người chơi cầu lông có nhu cầu tra cứu, đặt sân và quản lý lịch đặt. | `README.md` (Mục 2.1) |
-| **Nhân viên** | Staff | Nhân viên vận hành tại cụm sân, phụ trách check-in/out và đặt tại quầy. | `README.md` (Mục 2.2) |
-| **Quản trị viên** | Admin | Chủ sân hoặc người quản lý có toàn quyền quản trị danh mục sân, giá và báo cáo. | `README.md` (Mục 2.3) |
-
-### 1.4. Tài liệu tham khảo
-1. `README.md` – Tài liệu giới thiệu mục tiêu, 3 vai trò, chức năng chính và 3 luồng cốt lõi của dự án.
-2. `TAILIEU/Checklist_truoc_khi_nop.docx` – Tiêu chí kiểm tra điều kiện nghiệm thu đồ án (Mục A1: URD).
-3. `TAILIEU/Tieu_chi_cham_diem.docx` – Rubric chấm điểm tiêu chí A1.
+### 1.2. Mục tiêu hệ thống
+Xây dựng ứng dụng web dành riêng cho Nhân viên sân cầu lông với mục tiêu:
+1. Số hóa việc quản lý lịch sân, loại bỏ hoàn toàn tình trạng đặt trùng lịch (0% Double Booking).
+2. Cho phép nhân viên tra cứu nhanh tình trạng sân trống theo ngày và khung giờ trực quan theo thời gian thực.
+3. Hỗ trợ thao tác tạo đơn đặt sân và hủy đặt sân nhanh gọn, cập nhật ngay lập tức trạng thái trên lịch trực quan.
+4. Đảm bảo giao diện thích ứng mượt mà (Responsive) trên cả điện thoại di động (khi nhân viên đi lại kiểm tra sân) và máy tính để bàn (tại quầy lễ tân).
 
 ---
 
-## 2. Mô tả chung về hệ thống
+## 2. Phạm vi người dùng và Vai trò nghiệp vụ
 
-### 2.1. Bối cảnh và Mô tả hệ thống hiện tại
-Tại nhiều cụm sân cầu lông hiện nay, quy trình quản lý đặt sân vẫn được thực hiện thủ công:
-- Khách hàng gọi điện thoại, nhắn tin hoặc đến trực tiếp để hỏi sân trống.
-- Nhân viên kiểm tra sổ ghi chép tay hoặc file rời rạc để thông báo giờ trống và ghi nhận thông tin khách.
-- Khi khách muốn hủy lịch hoặc đổi sân, nhân viên phải dò lại sổ sách và xóa dòng thủ công.
-
-### 2.2. Hạn chế của hệ thống thủ công
-1. **Dễ xảy ra trùng lịch (Double Booking)**: Khi nhiều nhân viên cùng tiếp nhận thông tin tại một thời điểm hoặc ghi chép chậm trễ, cùng một khung giờ có thể bị hứa hẹn cho 2 nhóm khách khác nhau.
-2. **Khách hàng thiếu chủ động**: Không xem được lịch trống trực quan, phải chờ nhân viên phản hồi tin nhắn.
-3. **Thất thoát doanh thu và khó thống kê**: Quản lý bằng sổ sách dễ bị sót đơn, khó kiểm soát số tiền thực thu, không có biểu đồ trực quan về tỷ lệ lấp đầy sân.
-4. **Quy trình hủy sân bị động**: Khách hủy sát giờ nhưng sân không kịp thông báo công khai, dẫn đến lãng phí tài nguyên sân trống.
-
-### 2.3. Mục tiêu của hệ thống cần xây dựng (Trích `README.md` Mục 1)
-- **Tự động hóa quy trình đặt sân**: Người chơi dễ dàng tra cứu lịch trống, đặt lịch mọi lúc mọi nơi.
-- **Minh bạch hóa quản lý**: Giúp chủ sân và nhân viên theo dõi trạng thái sân, doanh thu và lịch đặt theo thời gian thực.
-- **Trải nghiệm người dùng mượt mà**: Giao diện trực quan, tốc độ xử lý nhanh chóng, thông báo rõ ràng, loại bỏ hoàn toàn trùng lịch.
+* **MỘT (01) VAI TRÒ NGHIỆP VỤ DUY NHẤT: NHÂN VIÊN (Staff)**.
+  - Là người trực tiếp vận hành tại sân cầu lông, thực hiện tiếp nhận thông tin khách, tra cứu lịch, tạo đơn đặt sân và xử lý hủy đặt sân.
+* **Lưu ý về trạng thái truy cập**:
+  - Đối tượng "Người chưa đăng nhập" vào website chỉ là **trạng thái truy cập trước khi xác thực**, tuyệt đối không phải là một vai trò nghiệp vụ mới. Người chưa đăng nhập chỉ nhìn thấy màn hình Đăng nhập / Đăng ký và không thể xem lịch hay thao tác dữ liệu sân bãi.
+* **Phạm vi LOẠI BỎ**:
+  - Không có vai trò Khách hàng (Customer) tự đặt sân online.
+  - Không có vai trò Quản trị viên (Admin).
+  - Không có chức năng thanh toán trực tuyến, báo cáo doanh thu, cấu hình giá tiền hay điểm danh Check-in/Check-out.
 
 ---
 
-## 3. Các đối tượng người dùng (3 User Roles – Trích `README.md` Mục 2)
+## 3. Danh mục User Stories (Nhu cầu người dùng)
 
-### 3.1. Khách hàng (Customer)
-- Đăng ký, đăng nhập tài khoản.
-- Tìm kiếm sân theo ngày, khung giờ, chi nhánh và loại sân (sân thảm tiêu chuẩn, sân VIP).
-- Đặt sân trực tuyến, thanh toán hoặc giữ chỗ tạm thời.
-- Xem lịch sử đặt sân, nhận thông báo xác nhận và thực hiện hủy lịch đặt sân khi có nhu cầu.
-
-### 3.2. Nhân viên (Staff)
-- Xem lịch đặt sân tổng quan trong ngày/tuần theo dạng Timeline.
-- Check-in, check-out cho khách khi đến sân.
-- Tiếp nhận và tạo lịch đặt sân trực tiếp tại quầy cho khách vãng lai.
-- Hỗ trợ đổi giờ hoặc hủy lịch đặt theo yêu cầu của khách tại sân.
-
-### 3.3. Quản trị viên (Admin)
-- Quản trị toàn bộ hệ thống: danh mục sân, số lượng sân, bảng giá theo khung giờ (giờ thường / giờ vàng / cuối tuần).
-- Quản lý tài khoản người dùng và phân quyền nhân viên.
-- Báo cáo thống kê doanh thu, tỷ lệ lấp đầy sân và xu hướng giờ chơi.
-- Cấu hình các chính sách hệ thống (thời gian hủy sân tối thiểu, tỷ lệ cọc/hoàn tiền).
+| Mã US | Tên User Story | Mô tả nhu cầu (Dạng As a / I want / So that) | Mức ưu tiên | Chức năng SRS tương ứng |
+| :---: | :--- | :--- | :---: | :---: |
+| **`US-01`** | **Đăng ký tài khoản nhân viên** | **Là một** nhân viên mới của sân cầu lông,<br>**Tôi muốn** đăng ký tài khoản nhân viên trên hệ thống bằng thông tin cá nhân và mật khẩu,<br>**Để** tôi có định danh làm việc và được cấp quyền truy cập vào các chức năng vận hành sân. | **Bắt buộc (Must-have)** | `FR-01` |
+| **`US-02`** | **Đăng nhập hệ thống** | **Là một** nhân viên đã có tài khoản,<br>**Tôi muốn** đăng nhập vào hệ thống bằng thông tin định danh và mật khẩu,<br>**Để** xác thực phiên làm việc và bảo mật dữ liệu đặt sân của cơ sở. | **Bắt buộc (Must-have)** | `FR-02` |
+| **`US-03`** | **Xem lịch đặt sân** | **Là một** nhân viên trực quầy,<br>**Tôi muốn** xem bảng lịch trực quan thể hiện tình trạng tất cả các sân theo ngày và từng khung giờ (Trống / Đã đặt),<br>**Để** tôi nắm bắt tình hình sân bãi tức thời và trả lời khách hàng nhanh chóng. | **Bắt buộc (Must-have)** | `FR-03` |
+| **`US-04`** | **Đặt sân cho khách** | **Là một** nhân viên tiếp nhận yêu cầu đặt sân,<br>**Tôi muốn** tạo đơn đặt sân trên một hoặc nhiều slot còn trống cho khách,<br>**Để** giữ sân chắc chắn cho khách và hệ thống tự động khóa slot đó để ngăn người khác đặt trùng. | **Bắt buộc (Must-have)** | `FR-04` |
+| **`US-05`** | **Hủy đặt sân** | **Là một** nhân viên tiếp nhận yêu cầu hủy,<br>**Tôi muốn** thực hiện hủy một lượt đặt sân đã có trên hệ thống,<br>**Để** giải phóng ngay khung giờ đó thành slot trống trên lịch cho khách khác có thể đặt. | **Bắt buộc (Must-have)** | `FR-05` |
 
 ---
 
-## 4. Ba luồng nghiệp vụ chính ở mức người dùng (Trích `README.md` Mục 4)
+## 4. Đặc tả các Luồng người dùng chính (Core User Flows)
 
-### 4.1. Luồng 1: Đặt sân (Booking Flow)
-1. **Khách hàng** truy cập hệ thống, chọn ngày và xem danh sách các sân cùng các khung giờ trống (slots).
-2. **Khách hàng** chọn sân và một hoặc nhiều khung giờ mong muốn.
-3. Hệ thống kiểm tra tính khả dụng của slot và khóa tạm thời (hold slot) trong quá trình xác nhận.  
-   *(Tham số thời gian giữ chỗ: [Đề xuất chờ xác nhận: 10 phút — chưa có nguồn xác nhận chính thức])*.
-4. **Khách hàng** xác nhận thông tin đặt sân (và phương thức thanh toán/cọc).  
-   *(Quy định cọc/thanh toán: [Chưa xác định — chưa có nguồn xác nhận chính thức])*.
-5. Hệ thống lưu thông tin đặt sân vào cơ sở dữ liệu với trạng thái `CONFIRMED`, gửi xác nhận thành công cho khách hàng và cập nhật slot sang trạng thái đã đặt.
+### 4.1. Luồng 1: Xem lịch đặt sân (Timeline & Availability)
+```mermaid
+flowchart TD
+    A["Nhân viên đăng nhập thành công"] --> B["Mở màn hình Lịch đặt sân"]
+    B --> C["Hệ thống hiển thị lưới lịch sân của ngày hiện tại"]
+    C --> D{"Nhân viên muốn đổi ngày?"}
+    D -- Có --> E["Chọn ngày khác từ bộ chọn ngày (Date Picker)"]
+    E --> F["Hệ thống tải lại lưới lịch của ngày được chọn"]
+    D -- Không --> G["Xem trạng thái các slot: Xanh (Trống) / Đỏ (Đã đặt)"]
+    F --> G
+```
+- **Mô tả hành động**: Nhân viên truy cập trang Lịch, chọn ngày cần tra cứu. Hệ thống hiển thị bảng ma trận: các hàng là danh sách các sân (Sân 1, Sân 2...), các cột là các khung giờ trong ngày (ví dụ: 06:00 - 07:00, ..., 21:00 - 22:00). Nhân viên nhận biết ngay khung giờ nào còn trống để tư vấn cho khách.
 
-### 4.2. Luồng 2: Hủy đặt sân (Cancel Booking Flow)
-1. **Khách hàng** vào mục "Lịch sử đặt sân" và chọn đơn đặt sân muốn hủy.
-2. Hệ thống kiểm tra chính sách hủy.  
-   *(Quy định thời hạn hủy: README.md ghi "ví dụ trước 12h hoặc 24h"; [Đề xuất chờ xác nhận: tối thiểu trước 24 giờ — chưa có nguồn xác nhận chính thức])*.
-3. Nếu hợp lệ, hệ thống cập nhật trạng thái đơn thành `CANCELLED`.
-4. Hệ thống giải phóng slot đã đặt để sân trở lại trạng thái khả dụng cho khách hàng khác tiếp tục đặt.
-5. Gửi thông báo xác nhận hủy sân thành công tới khách hàng.
+### 4.2. Luồng 2: Đặt sân cho khách (Booking Creation)
+```mermaid
+flowchart TD
+    A["Nhân viên chọn 1 hoặc nhiều slot còn trống (Màu xanh)"] --> B["Bấm nút 'Đặt sân'"]
+    B --> C["Hiển thị form nhập thông tin đặt sân"]
+    C --> D["Nhập thông tin khách (Họ tên, SĐT, Ghi chú)"]
+    D --> E["Bấm 'Xác nhận đặt'"]
+    E --> F{"Hệ thống kiểm tra tranh chấp slot"}
+    F -- Slot vẫn trống --> G["Tạo đơn đặt thành công & Cập nhật slot sang Đỏ (Đã đặt)"]
+    F -- Slot vừa bị người khác đặt --> H["Báo lỗi tranh chấp: 'Khung giờ này vừa được đặt, vui lòng chọn slot khác'"]
+    G --> I["Thông báo thành công & Tự động làm mới bảng lịch"]
+```
+- **Mô tả hành động**: Nhân viên bấm vào ô slot trống trên lịch, nhập thông tin khách hàng và bấm xác nhận. Hệ thống lưu đơn đặt vào cơ sở dữ liệu, ngay lập tức đổi màu ô slot đó thành "Đã đặt" mà không cần tải lại toàn bộ trang web.
 
-### 4.3. Luồng 3: Quản lý sân (Court Management Flow)
-1. **Admin/Staff** đăng nhập vào trang quản trị và truy cập mục "Quản lý sân".
-2. **Admin** có thể thêm mới sân, chỉnh sửa tên sân, loại thảm, trạng thái hoạt động (bảo trì/hoạt động).
-3. **Admin** cấu hình bảng giá động theo các khung giờ.  
-   *(Mức giá cụ thể: README.md ghi ví dụ "sáng 80.000đ/h, tối giờ vàng 150.000đ/h"; [Đề xuất chờ xác nhận — chưa có nguồn xác nhận chính thức])*.
-4. Hệ thống áp dụng ngay bảng giá và cấu hình mới vào bảng tra cứu và tính tiền đặt sân cho toàn hệ thống.
-
----
-
-## 5. Bảng User Stories và Tiêu chí Nghiệm thu (Acceptance Criteria)
-
-Tất cả các yêu cầu được chuẩn hóa theo định dạng:  
-**"Là [Vai trò], tôi muốn [Hành động/Mong muốn], để [Giá trị/Lợi ích mang lại]"**.
-
-| Mã US | Vai trò | Nội dung User Story | Độ ưu tiên | Tiêu chí nghiệm thu ở mức người dùng (Acceptance Criteria) | Tình trạng nguồn xác nhận |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-01** | Khách hàng | Là Khách hàng, tôi muốn xem danh sách các sân và lịch trống theo ngày, để chọn được giờ chơi phù hợp. | **Cao (P1)** | - Hiển thị danh sách sân kèm trạng thái trống/đã đặt theo khung giờ.<br>- Màu sắc hoặc nhãn phân biệt rõ slot trống và slot đã có người đặt. | Khớp `README.md` Mục 2.1 |
-| **US-02** | Khách hàng | Là Khách hàng, tôi muốn giữ chỗ tạm thời slot khi chọn, để có thời gian điền thông tin mà không bị người khác đặt trùng. | **Cao (P1)** | - Slot được chuyển sang trạng thái tạm khóa ngay khi chọn.<br>- Người dùng khác không thể chọn trùng slot đang giữ chỗ.<br>- Tự động giải phóng nếu không hoàn tất xác nhận. | Khớp `README.md` Mục 4.1 |
-| **US-03** | Khách hàng | Là Khách hàng, tôi muốn nhận được mã đơn đặt sân duy nhất sau khi xác nhận, để dùng làm căn cứ khi đến sân chơi. | **Cao (P1)** | - Hệ thống cấp mã đơn đặt sân duy nhất.<br>- Hiển thị đầy đủ thông tin: Sân, Ngày, Giờ chơi, Tổng tiền, Trạng thái. | Khớp `README.md` Mục 4.1 |
-| **US-04** | Khách hàng | Là Khách hàng, tôi muốn hủy lịch đặt sân khi có việc bận, để giải phóng sân cho người khác và tuân thủ chính sách hủy. | **Cao (P1)** | - Chỉ cho phép hủy khi đáp ứng chính sách thời gian quy định.<br>- Slot được giải phóng ngay lập tức trên hệ thống sau khi hủy thành công.<br>- Trạng thái đơn chuyển sang Đã hủy. | Khớp `README.md` Mục 4.2 |
-| **US-05** | Khách hàng | Là Khách hàng, tôi muốn xem lịch sử tất cả các đơn đặt sân của mình, để theo dõi các trận đấu sắp tới và đã hoàn thành. | **Trung bình (P2)** | - Danh sách hiển thị các đơn đặt của tài khoản kèm trạng thái.<br>- Có thể xem chi tiết từng đơn đặt. | Khớp `README.md` Mục 2.1 |
-| **US-06** | Nhân viên | Là Nhân viên, tôi muốn tra cứu mã đặt chỗ của khách khi họ đến sân, để thực hiện check-in xác nhận vào sân. | **Cao (P1)** | - Tìm kiếm được đơn đặt theo mã hoặc thông tin khách.<br>- Có chức năng check-in đổi trạng thái đơn khi khách đến sân. | Khớp `README.md` Mục 2.2 |
-| **US-07** | Nhân viên | Là Nhân viên, tôi muốn đặt sân nhanh tại quầy cho khách vãng lai, để tối ưu các slot trống trong ngày. | **Cao (P1)** | - Nhân viên có thể chọn slot trống và tạo đơn đặt trực tiếp tại chỗ cho khách không qua web. | Khớp `README.md` Mục 2.2 |
-| **US-08** | Nhân viên | Là Nhân viên, tôi muốn xem lịch tổng thể toàn bộ các sân theo dạng Timeline, để điều phối khách dễ dàng. | **Cao (P1)** | - Giao diện trực quan thể hiện lịch đặt của các sân theo trục thời gian trong ngày/tuần. | Khớp `README.md` Mục 2.2 |
-| **US-09** | Admin | Là Admin, tôi muốn thêm mới, sửa thông tin hoặc tạm đóng sân để bảo trì, để kiểm soát chính xác tình trạng sân. | **Cao (P1)** | - Cho phép thêm sân mới, sửa tên sân, loại thảm, chuyển trạng thái bảo trì/hoạt động.<br>- Sân bảo trì không hiển thị slot trống để đặt. | Khớp `README.md` Mục 2.3, 4.3 |
-| **US-10** | Admin | Là Admin, tôi muốn cấu hình bảng giá khác nhau cho giờ thường và giờ vàng, để tối ưu doanh thu của sân. | **Cao (P1)** | - Cho phép thiết lập bảng giá theo khung giờ (giờ thường / giờ vàng / cuối tuần).<br>- Giá mới được áp dụng ngay khi tính tiền đặt sân. | Khớp `README.md` Mục 2.3, 4.3 |
-| **US-11** | Admin | Là Admin, tôi muốn xem báo cáo doanh thu và tỷ lệ lấp đầy sân, để đánh giá hiệu quả kinh doanh. | **Trung bình (P2)** | - Báo cáo tổng doanh thu theo mốc thời gian.<br>- Thống kê tỷ lệ sử dụng/lấp đầy sân. | Khớp `README.md` Mục 2.3 |
-| **US-12** | Admin | Là Admin, tôi muốn quản lý tài khoản người dùng và phân quyền nhân viên, để bảo đảm an toàn hệ thống. | **Thấp (P3)** | - Phân tách quyền rõ ràng giữa Khách hàng, Nhân viên và Quản trị viên. | Khớp `README.md` Mục 2.3 |
+### 4.3. Luồng 3: Hủy đặt sân (Booking Cancellation)
+```mermaid
+flowchart TD
+    A["Nhân viên chọn ô slot đã đặt (Màu đỏ) trên lịch hoặc trong danh sách"] --> B["Xem chi tiết thông tin đơn đặt"]
+    B --> C["Bấm nút 'Hủy đặt sân'"]
+    C --> D["Hiển thị hộp thoại (Modal) xác nhận hủy"]
+    D --> E{"Nhân viên xác nhận 'Đồng ý hủy'?"}
+    E -- Có --> F["Hệ thống cập nhật trạng thái đơn thành 'Đã hủy'"]
+    F --> G["Tự động giải phóng slot chuyển về Màu xanh (Trống) trên lịch tức thời"]
+    E -- Không --> H["Đóng modal, giữ nguyên trạng thái"]
+```
+- **Mô tả hành động**: Khi khách gọi điện hoặc đến báo hủy, nhân viên mở đơn đặt đó lên, bấm Hủy. Hộp thoại xác nhận hiển thị nhằm tránh bấm nhầm. Sau khi xác nhận, slot lập tức chuyển lại trạng thái Còn trống (Màu xanh) để sẵn sàng phục vụ khách khác.
 
 ---
 
-## 6. Danh mục các tham số nghiệp vụ ĐỀ XUẤT CHỜ XÁC NHẬN
+## 5. Tiêu chí nghiệm thu người dùng (Acceptance Criteria)
 
-Để phục vụ công tác thiết kế chi tiết trong SRS và bộ test case mà không vi phạm nguyên tắc tự tiện áp đặt số liệu, bảng dưới đây tổng hợp toàn bộ các tham số giả định cần người dùng hoặc chủ đầu tư xác nhận:
-
-| Tham số nghiệp vụ | Giá trị đề xuất kỹ thuật | Căn cứ đề xuất | Tình trạng xác nhận |
-| :--- | :--- | :--- | :---: |
-| **Thời lượng một khung giờ (Slot duration)** | 60 phút / slot (06:00 - 22:00) | Chuẩn thuê sân cầu lông phổ biến | *[Đề xuất chờ xác nhận]* |
-| **Thời gian giữ chỗ tạm thời (Hold duration)**| 10 phút (600 giây) | Đủ để điền thông tin và chống chiếm giữ slot ảo | *[Đề xuất chờ xác nhận]* |
-| **Thời hạn hủy sân tối thiểu** | Tối thiểu trước 24 giờ trước giờ chơi | Cân bằng quyền lợi khách và tỷ lệ lấp đầy sân | *[Đề xuất chờ xác nhận]* |
-| **Khung giờ cao điểm (Giờ vàng)** | 17:00 – 22:00 ngày thường và cả ngày Thứ 7, Chủ Nhật | Thói quen chơi thể thao sau giờ làm | *[Đề xuất chờ xác nhận]* |
-| **Mức giá giờ thường / giờ vàng** | 80.000 VNĐ / 140.000 VNĐ một giờ | Dựa theo ví dụ minh họa trong `README.md` | *[Đề xuất chờ xác nhận]* |
-| **Tỷ lệ cọc / Hoàn cọc khi đặt sân** | Chưa áp dụng thanh toán online thực tế (giả lập 100%) | Tránh phát sinh nghiệp vụ cổng thanh toán | *[Đề xuất chờ xác nhận]* |
-
----
-
-## 7. Bảng mã lỗi nghiệp vụ mức người dùng
-
-| Mã lỗi URD | Tình huống phát sinh lỗi | Thông báo hiển thị cho người dùng | Hướng dẫn khắc phục |
-| :--- | :--- | :--- | :--- |
-| **ERR_URD_01** | Khung giờ vừa chọn đã có người khác đặt trước | "Rất tiếc! Khung giờ này vừa có người đặt. Vui lòng chọn khung giờ khác." | Người dùng chọn lại slot trống khác trên timeline. |
-| **ERR_URD_02** | Khách hàng hủy sân vi phạm chính sách thời gian | "Không thể hủy lịch đặt do vi phạm thời hạn quy định của sân." | Liên hệ trực tiếp quản lý/hotline để được hỗ trợ. |
-| **ERR_URD_03** | Khách hàng hết thời gian giữ chỗ mà chưa bấm xác nhận | "Phiên giữ chỗ tạm thời đã hết hạn. Khung giờ đã được giải phóng." | Thực hiện chọn lại sân và thao tác nhanh hơn. |
-| **ERR_URD_04** | Nhập sai thông tin liên hệ khi đặt sân | "Thông tin liên hệ không hợp lệ. Vui lòng kiểm tra lại họ tên và số điện thoại." | Kiểm tra lại thông tin nhập liệu trên màn hình. |
-| **ERR_URD_05** | Tra cứu mã đặt chỗ không tồn tại khi check-in | "Không tìm thấy thông tin đơn đặt sân với mã đã cung cấp." | Kiểm tra lại tin nhắn/email xác nhận hoặc tìm theo Số điện thoại. |
+1. **Về Đăng ký & Đăng nhập**:
+   - Nhân viên đăng ký thành công khi cung cấp đầy đủ thông tin hợp lệ (SĐT đúng định dạng, mật khẩu đủ độ dài).
+   - Đăng nhập đúng cấp quyền vào phiên làm việc; đăng nhập sai thông tin hiển thị thông báo lỗi rõ ràng, không tiết lộ tài khoản có tồn tại hay không.
+   - Phiên làm việc được duy trì qua Token; khi hết hạn hoặc đăng xuất thì chuyển hướng an toàn về trang đăng nhập.
+2. **Về Xem lịch**:
+   - Lưới lịch hiển thị rõ ràng từng sân và từng khung giờ.
+   - Phân biệt trực quan trạng thái: Màu xanh (Còn trống) và Màu đỏ (Đã đặt).
+   - Hỗ trợ đổi ngày tra cứu nhanh chóng, dữ liệu tải mượt mà.
+3. **Về Đặt sân**:
+   - Chỉ cho phép chọn và đặt các slot đang ở trạng thái Trống (Màu xanh).
+   - Ngăn chặn triệt để việc đặt trùng lịch (Double Booking): Nếu hai nhân viên cùng thao tác trên 1 slot, chỉ 1 người thành công, người còn lại nhận thông báo lỗi tranh chấp rõ ràng.
+   - Slot sau khi đặt thành công phải đổi màu tức thời sang trạng thái Đã đặt (Màu đỏ).
+4. **Về Hủy đặt sân**:
+   - Luôn hiển thị hộp thoại xác nhận trước khi thực hiện hành động hủy để tránh mất dữ liệu do sơ suất.
+   - Sau khi hủy thành công, ô lịch tương ứng phải chuyển ngay về trạng thái Trống (Màu xanh).
+5. **Về Tính thích ứng (Responsive)**:
+   - Toàn bộ giao diện 5 chức năng hoạt động hoàn hảo trên cả màn hình di động (chiều rộng hẹp từ 320px) và máy tính để bàn (1366px trở lên).
+   - Form nhập liệu, nút bấm không bị tràn viền, không phát sinh cuộn ngang toàn trang. Bảng lịch có thể cuộn ngang trong vùng chứa riêng nhưng vẫn giữ cố định tên sân để nhân viên nhận biết.
 
 ---
 
-## 8. Kết luận nghiệm thu tài liệu URD
-- Tài liệu URD v1.0 đã bám sát 100% mục tiêu, 3 nhóm vai trò, các chức năng chính và 3 luồng nghiệp vụ quy định tại `README.md`.
-- Đáp ứng đầy đủ tiêu chí của Rubric A1 (≥ 3 vai trò, ≥ 3 luồng người dùng, 12 User Stories đúng chuẩn, có tiêu chí nghiệm thu).
-- Đã phân định rạch ròi giữa nội dung đã có nguồn và các tham số kỹ thuật đề xuất chờ xác nhận, bảo đảm tính trung thực tuyệt đối.
+## 6. Danh mục Câu hỏi Nghiệp vụ còn thiếu (Cần người dùng / GV xác nhận)
+
+Các quy tắc dưới đây hiện **chưa có văn bản quy định chính thức** và đang được tạm định hình dưới dạng `[Đề xuất kỹ thuật chờ xác nhận]`. Cần sự xác nhận từ phía người dùng/chủ sân để chuẩn hóa:
+
+| STT | Vấn đề nghiệp vụ | Tình trạng hiện tại | Đề xuất kỹ thuật tạm thời | Tác động nếu thay đổi |
+| :---: | :--- | :---: | :--- | :--- |
+| **Q1** | **Chính sách đăng ký tài khoản nhân viên** | `Chưa xác định` | Cho phép đăng ký tự do với SĐT và Mật khẩu, kích hoạt dùng được ngay để phục vụ làm đồ án và test. | Nếu cần duyệt bởi Quản lý/Mã mời nội bộ thì phải bổ sung trường nhập mã hoặc trạng thái chờ duyệt. |
+| **Q2** | **Khung giờ mở cửa & Thời lượng một slot** | `Đề xuất chờ xác nhận` | Cụm sân hoạt động từ **06:00 đến 22:00**, chia thành các block tròn giờ cố định **60 phút** (06:00-07:00, ..., 21:00-22:00). | Nếu cho phép đặt khung giờ lẻ (30p, 90p) thì cấu trúc cơ sở dữ liệu và lưới lịch hiển thị sẽ phức tạp hơn. |
+| **Q3** | **Dữ liệu bắt buộc khi tạo đơn đặt sân** | `Đề xuất chờ xác nhận` | Bắt buộc: **Họ tên khách hàng**, **Số điện thoại liên hệ**, Ngày, Sân và Khung giờ. Trường Ghi chú là tùy chọn. | Nếu chỉ cần chọn sân/giờ mà không cần SĐT khách thì giảm ràng buộc validation form. |
+| **Q4** | **Phân quyền và Phạm vi hủy đặt sân** | `Đề xuất chờ xác nhận` | Nhân viên được quyền hủy **bất kỳ lịch đặt nào** trên hệ thống khi có yêu cầu (hệ thống tự động lưu vết ID nhân viên thực hiện hủy). | Nếu chỉ cho phép nhân viên hủy lịch do chính tài khoản của mình tạo thì cần bổ sung kiểm tra quyền sở hữu đơn đặt. |
+| **Q5** | **Thời hạn và Điều kiện hủy sân** | `Chưa xác định` | Cho phép nhân viên hủy tại bất kỳ thời điểm nào trước hoặc trong ngày chơi để xử lý linh hoạt tại quầy. | Nếu có quy chế phạt hoặc chặn hủy sát giờ (ví dụ: cấm hủy trước < 2 giờ) thì cần bổ sung logic kiểm tra thời gian. |

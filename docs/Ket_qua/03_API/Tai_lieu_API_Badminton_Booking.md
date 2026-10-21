@@ -1,77 +1,56 @@
-# TÀI LIỆU THIẾT KẾ VÀ ĐẶC TẢ API
-## (API Specification Document – Theo Mẫu 01)
-# HỆ THỐNG ĐẶT SÂN CẦU LÔNG TRỰC TUYẾN
-### Badminton Court Booking System
-**Phiên bản**: v1.0  
-**Ngày lập**: 21/10/2026  
-**Người lập**: Chưa xác định — chưa có nguồn xác nhận (Cần bổ sung Họ tên, MSSV)  
-**Căn cứ áp dụng**: Theo chuẩn `TAILIEU/Mau_01_Tai_lieu_API.docx` và chi tiết hóa từ SRS v1.0  
-**Trạng thái tài liệu**: **BẢN NHÁP THIẾT KẾ API — ĐÃ TÁCH RIÊNG RẼ ENDPOINT ĐÃ CÓ CODE VÀ ENDPOINT DỰ KIẾN**
+# TÀI LIỆU THIẾT KẾ API (API SPECIFICATION)
+## HỆ THỐNG ĐẶT SÂN CẦU LÔNG (BADMINTON COURT BOOKING SYSTEM)
+### Phiên bản: v2.0 (Cập nhật ngày 21/10/2026 theo phạm vi mới)
+> [!NOTE]
+> **LỊCH SỬ THAY ĐỔI PHẠM VI DỰ ÁN**:  
+> Phiên bản v2.0 này **thay thế hoàn toàn bản API v1.0 cũ** (vốn có 17 endpoint bao gồm Customer, Admin, Thanh toán, Báo cáo doanh thu).  
+> Theo phạm vi mới, tài liệu được tinh gọn tập trung duy nhất vào các API phục vụ tác nghiệp của **Nhân viên (Staff)** gồm 5 chức năng: Đăng ký, Đăng nhập, Xem lịch, Đặt sân, Hủy đặt sân.
+
+> [!WARNING]
+> **NGUYÊN TẮC PHÂN ĐỊNH RẠCH RÒI HIỆN TRẠNG MÃ NGUỒN**:
+> - **Endpoint duy nhất đã triển khai mã nguồn và kiểm thử hoạt động thực tế**: `GET /api/health` (tại cổng 5001).
+> - **Toàn bộ các endpoint nghiệp vụ còn lại**: Đang ở trạng thái **BẢN NHÁP THIẾT KẾ DỰ KIẾN (THEO SRS v2.0)**, chưa có mã nguồn backend thực tế. Mọi cấu trúc Request, Response và Validation đều là thiết kế kỹ thuật phục vụ giai đoạn lập trình tiếp theo, tuyệt đối không được mô tả như đã hoạt động.
 
 ---
 
-> [!IMPORTANT]
-> **PHÂN ĐỊNH RẠCH RÒI HIỆN TRẠNG MÃ NGUỒN THEO NGUYÊN TẮC KHÔNG BỊA ĐẶT**:
-> 1. **Endpoint ĐÃ CÓ MÃ NGUỒN THỰC TẾ VÀ ĐÃ KIỂM CHỨNG**: Duy nhất `GET /api/health` (và route gốc `GET /`) được cài đặt trong `backend/src/server.js` và `backend/src/routes/health.js`, lắng nghe tại cổng 5001.
-> 2. **Các Endpoint DỰ KIẾN THEO THIẾT KẾ SRS**: Toàn bộ các API nghiệp vụ (Auth, Court, Booking, Cancel, Checkin, Report) là **THIẾT KẾ MỤC TIÊU DỰ KIẾN, HOÀN TOÀN CHƯA ĐƯỢC TRIỂN KHAI TRONG MÃ NGUỒN BACKEND**. Tester không thể gọi các endpoint này trên mã nguồn hiện tại vì server sẽ trả về lỗi `404 Not Found`.
+## 1. Thông tin chung về hệ thống API
+
+* **Địa chỉ máy chủ cục bộ (Local Server URL)**: `http://localhost:5001`
+* **Địa chỉ máy chủ triển khai công khai (Staging/Production)**: `[Chưa xác định — Chờ triển khai môi trường máy chủ tuần 6]`
+* **Định dạng dữ liệu giao tiếp**: `application/json` (Encoding: `UTF-8`).
+* **Cơ chế xác thực (Authentication)**:
+  - Sử dụng Token định dạng JSON Web Token (JWT) truyền qua tiêu đề HTTP Request:  
+    `Authorization: Bearer <token>`
+  - Đối với các endpoint yêu cầu quyền Nhân viên, nếu thiếu Token hoặc Token không hợp lệ/hết hạn, hệ thống trả về mã lỗi HTTP `401 Unauthorized`.
 
 ---
 
-## 1. Thông tin chung
+## 2. Bảng mã lỗi chuẩn toàn hệ thống (General Error Codes)
 
-| Mục | Nội dung quy chuẩn | Tình trạng nguồn xác nhận |
-| :--- | :--- | :---: |
-| **Base URL (Local Dev)** | `http://localhost:5001/api` | **Đã có mã nguồn** (Cổng thực tế trong `server.js`) |
-| **Base URL (Staging / Production)**| Chưa xác định — chưa có nguồn xác nhận (Cần URL server khi deploy) | *Chưa xác định* |
-| **Định dạng dữ liệu** | `application/json; charset=utf-8` | **Đã có mã nguồn** (`express.json()`) |
-| **Cơ chế xác thực (Auth)** | `Bearer Token (JWT)` | *Đề xuất kỹ thuật theo SRS* (Chưa code) |
-| **Cách lấy Token** | Gọi `POST /api/auth/login`, trích xuất trường `data.token` | *Theo thiết kế dự kiến* |
-| **Thời hạn Token** | 60 phút (3600 giây) | *[Đề xuất kỹ thuật chờ xác nhận]* |
-| **Định dạng Ngày Giờ** | `ISO 8601` (`YYYY-MM-DDTHH:mm:ss.sssZ`) hoặc `YYYY-MM-DD` | **Đã có mã nguồn** trong health check |
-
----
-
-## 2. Mã lỗi chung của hệ thống
-
-| Mã HTTP | Ý nghĩa chuẩn | Mô tả lỗi trong hệ thống | Cấu trúc Body phản hồi mẫu |
-| :---: | :--- | :--- | :--- |
-| **200** | OK | Thao tác truy vấn hoặc cập nhật thành công | `{"status": "success", "data": { ... }}` |
-| **201** | Created | Khởi tạo tài nguyên mới thành công | `{"status": "success", "data": { "id": "...", ... }}` |
-| **400** | Bad Request | Dữ liệu đầu vào vi phạm ràng buộc định dạng hoặc nghiệp vụ | `{"error": "ERR_VALIDATION_FAILED", "message": "...", "fields": { ... }}` |
-| **401** | Unauthorized | Chưa gửi token, token sai hoặc token đã hết hạn | `{"error": "ERR_UNAUTHORIZED", "message": "Phiên làm việc không hợp lệ hoặc đã hết hạn"}` |
-| **403** | Forbidden | Đã đăng nhập nhưng không đủ quyền thực hiện hành động | `{"error": "ERR_FORBIDDEN", "message": "Bạn không có quyền thực hiện thao tác này"}` |
-| **404** | Not Found | Không tìm thấy tài nguyên (mã sân, mã đơn đặt) | `{"error": "ERR_NOT_FOUND", "message": "Không tìm thấy dữ liệu yêu cầu"}` |
-| **409** | Conflict | Xung đột dữ liệu (slot đã bị người khác giữ chỗ, trùng SĐT) | `{"error": "ERR_SLOT_ALREADY_LOCKED", "message": "Khung giờ vừa chọn đã có người giữ chỗ"}` |
-| **500** | Internal Error | Lỗi máy chủ hoặc mất kết nối cơ sở dữ liệu | `{"error": "ERR_INTERNAL_SERVER", "message": "Lỗi máy chủ nội bộ"}` |
+| Mã lỗi HTTP | Tên mã lỗi chuẩn (Code) | Ý nghĩa nghiệp vụ |
+| :---: | :--- | :--- |
+| **`200 OK`** | `SUCCESS` | Yêu cầu thực hiện thành công (xem lịch, hủy sân, lấy thông tin). |
+| **`201 Created`** | `CREATED` | Tạo mới tài nguyên thành công (đăng ký nhân viên, tạo đơn đặt sân). |
+| **`400 Bad Request`** | `INVALID_INPUT` | Dữ liệu đầu vào sai định dạng, thiếu trường bắt buộc hoặc vi phạm ràng buộc nghiệp vụ. |
+| **`401 Unauthorized`** | `UNAUTHORIZED` | Chưa đăng nhập, thiếu Token hoặc Token hết hạn/không hợp lệ. |
+| **`404 Not Found`** | `NOT_FOUND` | Không tìm thấy tài nguyên yêu cầu (không tìm thấy sân, không tìm thấy đơn đặt). |
+| **`409 Conflict`** | `DOUBLE_BOOKING_CONFLICT` | **Xung đột tranh chấp đặt trùng**: Khung giờ vừa bị người khác đặt thành công trước đó. |
+| **`500 Internal Server Error`** | `INTERNAL_ERROR` | Lỗi máy chủ cơ sở dữ liệu hoặc ngoại lệ chưa được xử lý trong mã nguồn. |
 
 ---
 
-## 3. Danh sách Endpoint và Hiện trạng triển khai
+## 3. Danh mục Endpoint theo phạm vi nghiệp vụ mới
 
-### 3.1. Nhóm Endpoint ĐÃ CÓ MÃ NGUỒN THỰC TẾ
-| STT | Method | Endpoint | Mô tả | Chức năng (FR) | Vai trò | Tình trạng mã nguồn thực tế |
-| :---: | :---: | :--- | :--- | :---: | :---: | :---: |
-| 1 | `GET` | `/api/health` | Kiểm tra trạng thái hoạt động của Backend API | Hệ thống | Tất cả | **ĐÃ CÓ MÃ NGUỒN & ĐÃ CHẠY TEST (HTTP 200)** |
-| 2 | `GET` | `/` | Endpoint trang gốc giới thiệu service | Hệ thống | Tất cả | **ĐÃ CÓ MÃ NGUỒN (`backend/src/server.js`)** |
-
-### 3.2. Nhóm Endpoint DỰ KIẾN THEO THIẾT KẾ SRS (CHƯA TRIỂN KHAI)
-| STT | Method | Endpoint | Mô tả nghiệp vụ dự kiến | Chức năng (FR) | Vai trò được phép | Tình trạng mã nguồn thực tế |
-| :---: | :---: | :--- | :--- | :---: | :---: | :---: |
-| 3 | `POST` | `/api/auth/register` | Đăng ký tài khoản Khách hàng mới | `FR-01` | Khách vãng lai | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 4 | `POST` | `/api/auth/login` | Đăng nhập và lấy JWT token | `FR-02` | Tất cả | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 5 | `GET` | `/api/auth/me` | Lấy thông tin tài khoản hiện tại | `FR-03` | Đã đăng nhập | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 6 | `GET` | `/api/courts` | Lấy danh sách sân cầu lông | `FR-04` | Tất cả | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 7 | `POST` | `/api/courts` | Thêm sân mới (chỉ Admin) | `FR-04` | Chỉ `ADMIN` | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 8 | `PUT` | `/api/courts/:courtId` | Sửa thông tin hoặc chuyển bảo trì sân | `FR-04` | Chỉ `ADMIN` | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 9 | `GET` | `/api/courts/pricing` | Xem bảng giá giờ thường & giờ cao điểm | `FR-05` | Tất cả | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 10 | `PUT` | `/api/courts/pricing` | Cấu hình bảng giá (chỉ Admin) | `FR-05` | Chỉ `ADMIN` | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 11 | `GET` | `/api/slots/availability`| Tra cứu khung giờ trống theo ngày | `FR-06` | Tất cả | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 12 | `POST` | `/api/bookings/hold` | Khóa tạm thời khung giờ (Hold slot 10p) | `FR-07` | Customer, Staff, Admin | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 13 | `POST` | `/api/bookings/confirm` | Xác nhận tạo đơn đặt sân chính thức | `FR-08` | Customer, Staff, Admin | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 14 | `POST` | `/api/bookings/walk-in` | Đặt sân tại quầy cho khách vãng lai | `FR-09` | Staff, Admin | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 15 | `POST` | `/api/bookings/:id/cancel`| Hủy lịch đặt sân tự phục vụ | `FR-10` | Customer, Staff, Admin | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 16 | `PUT` | `/api/bookings/:id/checkin`| Điểm danh khách vào sân | `FR-11` | Staff, Admin | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
-| 17 | `GET` | `/api/reports/revenue` | Báo cáo doanh thu & hiệu suất sân | `FR-12` | Chỉ `ADMIN` | *CHƯA TRIỂN KHAI TRONG MÃ NGUỒN* |
+| STT | Phương thức (Method) | Đường dẫn (Endpoint) | Chức năng nghiệp vụ tương ứng | Tình trạng mã nguồn thực tế |
+| :---: | :---: | :--- | :--- | :---: |
+| **1** | **`GET`** | `/api/health` | Kiểm tra trạng thái hoạt động của Backend & DB Pool | **ĐÃ CÓ MÃ NGUỒN CHẠY THẬT (PORT 5001)** |
+| **2** | `POST` | `/api/auth/register` | `FR-01`: Đăng ký tài khoản nhân viên | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **3** | `POST` | `/api/auth/login` | `FR-02`: Đăng nhập hệ thống nhân viên | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **4** | `GET` | `/api/auth/me` | Lấy thông tin phiên làm việc của nhân viên hiện tại | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **5** | `GET` | `/api/slots/availability` | `FR-03`: Xem bảng lịch sân trống theo ngày | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **6** | `POST` | `/api/bookings` | `FR-04`: Đặt sân cho khách (kèm chống Double Booking) | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **7** | `GET` | `/api/bookings/:id` | Xem chi tiết thông tin đơn đặt sân | *Thiết kế dự kiến — Chưa có mã nguồn* |
+| **8** | `POST` | `/api/bookings/:id/cancel` | `FR-05`: Hủy đặt sân và giải phóng slot tức thời | *Thiết kế dự kiến — Chưa có mã nguồn* |
 
 ---
 
@@ -79,167 +58,228 @@
 
 ---
 
-### 4.1. [ĐÃ CÓ MÃ NGUỒN] `GET /api/health` – Kiểm tra trạng thái hệ thống
-- **Method & URL**: `GET {{baseUrl}}/health`
-- **Mã nguồn thực tế**: `backend/src/routes/health.js`
-- **Mô tả**: Kiểm tra dịch vụ Express server đang sống và đo thời gian uptime.
-- **Headers**: Không yêu cầu.
-- **Request Body**: Không có.
-- **Response thực tế đo được (200 OK)**:
-```json
-{
-  "status": "ok",
-  "service": "Badminton Court Booking System API",
-  "uptime": 4.29,
-  "timestamp": "2026-10-03T09:32:16.223Z"
-}
-```
+### 4.1. `GET /api/health`
+* **Mục đích**: Kiểm tra tình trạng sẵn sàng của server backend và kết nối MySQL pool.
+* **Quyền truy cập**: Công khai (Không cần Token).
+* **Tình trạng mã nguồn**: **ĐÃ TRIỂN KHAI THẬT tại `backend/src/server.js` (Chạy thành công tại cổng 5001)**.
+* **Request Header**: Không yêu cầu.
+* **Response Thành công (HTTP 200)**:
+  ```json
+  {
+    "status": "ok",
+    "timestamp": "2026-10-21T02:40:00.000Z",
+    "service": "badminton-court-booking-api"
+  }
+  ```
 
 ---
 
-### 4.2. [THEO THIẾT KẾ DỰ KIẾN] `POST /api/auth/login` – Đăng nhập hệ thống
-- **Method & URL**: `POST {{baseUrl}}/auth/login`
-- **Tình trạng mã nguồn**: *CHƯA TRIỂN KHAI*
-- **Mô tả nghiệp vụ**: Xác thực danh tính và trả về JWT token.
-- **Request Body dự kiến**:
-```json
-{
-  "loginId": "0912345678",
-  "password": "Password@123"
-}
-```
-- **Response thành công dự kiến (200 OK)**:
-```json
-{
-  "status": "success",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "expiresIn": 3600,
-    "user": {
-      "userId": "USR-1001",
-      "fullName": "Nguyễn Văn A",
-      "role": "CUSTOMER"
+### 4.2. `POST /api/auth/register`
+* **Mục đích**: `FR-01`: Đăng ký tài khoản nhân viên mới.
+* **Quyền truy cập**: Công khai.
+* **Tình trạng mã nguồn**: *Thiết kế dự kiến — Chưa có mã nguồn*.
+* **Request Body mẫu**:
+  ```json
+  {
+    "full_name": "Nguyễn Văn Nhân Viên",
+    "phone": "0901112223",
+    "password": "StaffPassword@123",
+    "confirm_password": "StaffPassword@123"
+  }
+  ```
+* **Ràng buộc kiểm tra (Validation)**:
+  - `full_name`: 2-50 ký tự, bắt buộc.
+  - `phone`: 10 ký tự số, đúng định dạng di động Việt Nam, duy nhất.
+  - `password`: Tối thiểu 6 ký tự.
+  - `confirm_password`: Phải trùng khớp với `password`.
+* **Response Thành công (HTTP 201 Created)**:
+  ```json
+  {
+    "success": true,
+    "message": "Đăng ký tài khoản nhân viên thành công",
+    "data": {
+      "user_id": 1,
+      "full_name": "Nguyễn Văn Nhân Viên",
+      "phone": "0901112223",
+      "role": "STAFF",
+      "created_at": "2026-10-21T08:00:00.000Z"
     }
   }
-}
-```
-- **Response lỗi dự kiến**: `401 Unauthorized`: `{"error": "ERR_INVALID_CREDENTIALS", "message": "Thông tin đăng nhập không chính xác"}`.
+  ```
+* **Response Lỗi (HTTP 400 Bad Request)**:
+  ```json
+  {
+    "success": false,
+    "code": "PHONE_ALREADY_EXISTS",
+    "message": "Số điện thoại này đã được đăng ký tài khoản nhân viên"
+  }
+  ```
 
 ---
 
-### 4.3. [THEO THIẾT KẾ DỰ KIẾN] `GET /api/slots/availability` – Tra cứu lịch sân trống
-- **Method & URL**: `GET {{baseUrl}}/slots/availability?date=2026-10-25`
-- **Tình trạng mã nguồn**: *CHƯA TRIỂN KHAI*
-- **Query Params**: `date` (YYYY-MM-DD, bắt buộc).
-- **Response thành công dự kiến (200 OK)**:
-```json
-{
-  "status": "success",
-  "data": {
-    "date": "2026-10-25",
-    "courts": [
-      {
-        "courtId": "CRT-01",
-        "courtName": "Sân 01 - Tiêu chuẩn",
-        "slots": [
-          { "slotId": "SLOT-01-08", "time": "08:00 - 09:00", "price": 80000, "status": "AVAILABLE" },
-          { "slotId": "SLOT-01-18", "time": "18:00 - 19:00", "price": 140000, "status": "BOOKED" }
-        ]
+### 4.3. `POST /api/auth/login`
+* **Mục đích**: `FR-02`: Đăng nhập xác thực nhân viên và cấp Token JWT.
+* **Quyền truy cập**: Công khai.
+* **Tình trạng mã nguồn**: *Thiết kế dự kiến — Chưa có mã nguồn*.
+* **Request Body mẫu**:
+  ```json
+  {
+    "phone": "0901112223",
+    "password": "StaffPassword@123"
+  }
+  ```
+* **Response Thành công (HTTP 200 OK)**:
+  ```json
+  {
+    "success": true,
+    "message": "Đăng nhập thành công",
+    "data": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "user": {
+        "user_id": 1,
+        "full_name": "Nguyễn Văn Nhân Viên",
+        "phone": "0901112223",
+        "role": "STAFF"
       }
-    ]
+    }
   }
-}
-```
-
----
-
-### 4.4. [THEO THIẾT KẾ DỰ KIẾN] `POST /api/bookings/hold` – Khóa tạm thời khung giờ
-- **Method & URL**: `POST {{baseUrl}}/bookings/hold`
-- **Tình trạng mã nguồn**: *CHƯA TRIỂN KHAI*
-- **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-- **Request Body dự kiến**:
-```json
-{
-  "courtId": "CRT-01",
-  "date": "2026-10-25",
-  "slotIds": ["SLOT-01-19"]
-}
-```
-- **Response thành công dự kiến (200 OK)**:
-```json
-{
-  "status": "success",
-  "data": {
-    "holdToken": "HOLD-7f9a8b1c-20261025-0012",
-    "holdUntil": "2026-10-21T09:45:00.000Z",
-    "expiresInSeconds": 600
+  ```
+* **Response Lỗi (HTTP 401 Unauthorized)**:
+  ```json
+  {
+    "success": false,
+    "code": "INVALID_CREDENTIALS",
+    "message": "Số điện thoại hoặc mật khẩu không chính xác"
   }
-}
-```
-- **Response lỗi dự kiến (409 Conflict)**: `{"error": "ERR_SLOT_ALREADY_LOCKED", "message": "Khung giờ này vừa có người giữ chỗ"}`.
+  ```
 
 ---
 
-### 4.5. [THEO THIẾT KẾ DỰ KIẾN] `POST /api/bookings/confirm` – Xác nhận tạo đơn đặt sân
-- **Method & URL**: `POST {{baseUrl}}/bookings/confirm`
-- **Tình trạng mã nguồn**: *CHƯA TRIỂN KHAI*
-- **Request Body dự kiến**:
-```json
-{
-  "holdToken": "HOLD-7f9a8b1c-20261025-0012",
-  "customerName": "Nguyễn Văn A",
-  "customerPhone": "0912345678"
-}
-```
-- **Response thành công dự kiến (201 Created)**:
-```json
-{
-  "status": "success",
-  "data": {
-    "bookingId": "BK-20261025-0042",
-    "courtName": "Sân 01 - Tiêu chuẩn",
-    "totalAmount": 140000,
-    "status": "CONFIRMED"
+### 4.4. `GET /api/slots/availability`
+* **Mục đích**: `FR-03`: Lấy ma trận tình trạng sân và khung giờ theo ngày được chọn.
+* **Quyền truy cập**: Bắt buộc đăng nhập (`Bearer Token`).
+* **Tình trạng mã nguồn**: *Thiết kế dự kiến — Chưa có mã nguồn*.
+* **Query Parameters**:
+  - `date`: Bắt buộc, chuỗi ngày định dạng `YYYY-MM-DD` (Ví dụ: `date=2026-10-22`).
+* **Response Thành công (HTTP 200 OK)**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "date": "2026-10-22",
+      "courts": [
+        {
+          "court_id": 1,
+          "court_name": "Sân số 1",
+          "slots": [
+            {
+              "time_slot": "06:00 - 07:00",
+              "status": "AVAILABLE",
+              "booking_id": null,
+              "customer_name": null
+            },
+            {
+              "time_slot": "07:00 - 08:00",
+              "status": "BOOKED",
+              "booking_id": 101,
+              "customer_name": "Trần Thị Khách"
+            }
+          ]
+        }
+      ]
+    }
   }
-}
-```
+  ```
 
 ---
 
-### 4.6. [THEO THIẾT KẾ DỰ KIẾN] `POST /api/bookings/:id/cancel` – Hủy lịch đặt sân
-- **Method & URL**: `POST {{baseUrl}}/bookings/BK-20261025-0042/cancel`
-- **Tình trạng mã nguồn**: *CHƯA TRIỂN KHAI*
-- **Response thành công dự kiến (200 OK)**:
-```json
-{
-  "status": "success",
-  "message": "Hủy đơn đặt sân thành công. Khung giờ đã được giải phóng",
-  "data": {
-    "bookingId": "BK-20261025-0042",
-    "status": "CANCELLED"
+### 4.5. `POST /api/bookings`
+* **Mục đích**: `FR-04`: Nhân viên tạo đơn đặt sân cho khách (Thực thi Transaction & Khóa chống Double Booking).
+* **Quyền truy cập**: Bắt buộc đăng nhập quyền Nhân viên (`Bearer Token`).
+* **Tình trạng mã nguồn**: *Thiết kế dự kiến — Chưa có mã nguồn*.
+* **Request Body mẫu**:
+  ```json
+  {
+    "court_id": 1,
+    "booking_date": "2026-10-22",
+    "time_slots": ["06:00 - 07:00"],
+    "customer_name": "Lê Văn Khách",
+    "customer_phone": "0988776655",
+    "note": "Khách đặt 1 tiếng buổi sáng"
   }
-}
-```
-- **Response lỗi dự kiến (400 Bad Request)**: `{"error": "ERR_CANCEL_TOO_LATE", "message": "Không thể hủy sân trước giờ chơi dưới 24 giờ"}`.
+  ```
+* **Response Thành công (HTTP 201 Created)**:
+  ```json
+  {
+    "success": true,
+    "message": "Đặt sân thành công cho khách Lê Văn Khách",
+    "data": {
+      "booking_id": 102,
+      "booking_code": "BK-20261022-0102",
+      "court_id": 1,
+      "court_name": "Sân số 1",
+      "booking_date": "2026-10-22",
+      "time_slots": ["06:00 - 07:00"],
+      "customer_name": "Lê Văn Khách",
+      "customer_phone": "0988776655",
+      "status": "CONFIRMED",
+      "created_by_staff_id": 1,
+      "created_at": "2026-10-21T08:15:00.000Z"
+    }
+  }
+  ```
+* **Response Lỗi Xung đột Đặt trùng (HTTP 409 Conflict)**:
+  ```json
+  {
+    "success": false,
+    "code": "SLOT_ALREADY_BOOKED",
+    "message": "Khung giờ này vừa có người đặt thành công. Vui lòng chọn khung giờ khác!"
+  }
+  ```
 
 ---
 
-## 5. Tài khoản kiểm thử API ĐỀ XUẤT CHO TESTER
-
-> [!NOTE]
-> Trong cơ sở dữ liệu hiện tại **CHƯA CÓ BẢNG `users` VÀ CHƯA CÓ TÀI KHOẢN THỰC TẾ**. Bảng dưới đây là **danh sách tài khoản đề xuất kỹ thuật** cần được khởi tạo vào cơ sở dữ liệu (seed data) khi lập trình module Auth:
-
-| Vai trò | Tên đăng nhập / Số điện thoại đề xuất | Mật khẩu đề xuất | Mục đích kiểm thử dự kiến | Tình trạng tài khoản |
-| :--- | :--- | :--- | :--- | :---: |
-| **Khách hàng 1 (Customer)** | `0912345678` | `Customer@123` | Kiểm thử luồng đặt sân, tra cứu lịch sử, hủy hợp lệ | *[Chờ seed vào DB]* |
-| **Khách hàng 2 (Customer)** | `0987654321` | `Customer@123` | Kiểm thử kịch bản tranh chấp slot (Race condition) | *[Chờ seed vào DB]* |
-| **Nhân viên (Staff)** | `0901112223` | `Staff@12345` | Kiểm thử chức năng Check-in tại quầy, đặt cho khách vãng lai | *[Chờ seed vào DB]* |
-| **Quản trị viên (Admin)** | `0909998887` | `Admin@123456` | Kiểm thử quản lý sân, sửa giá, xem báo cáo | *[Chờ seed vào DB]* |
+### 4.6. `POST /api/bookings/:id/cancel`
+* **Mục đích**: `FR-05`: Hủy lượt đặt sân và giải phóng slot ngay lập tức.
+* **Quyền truy cập**: Bắt buộc đăng nhập quyền Nhân viên (`Bearer Token`).
+* **Tình trạng mã nguồn**: *Thiết kế dự kiến — Chưa có mã nguồn*.
+* **URL Parameters**:
+  - `id`: Mã số đơn đặt sân (Ví dụ: `/api/bookings/102/cancel`).
+* **Request Body mẫu**:
+  ```json
+  {
+    "cancel_reason": "Khách bận việc đột xuất gọi điện báo hủy"
+  }
+  ```
+* **Response Thành công (HTTP 200 OK)**:
+  ```json
+  {
+    "success": true,
+    "message": "Đã hủy lượt đặt sân thành công. Khung giờ đã được giải phóng thành slot trống.",
+    "data": {
+      "booking_id": 102,
+      "status": "CANCELLED",
+      "cancelled_at": "2026-10-21T08:30:00.000Z",
+      "cancelled_by_staff_id": 1
+    }
+  }
+  ```
+* **Response Lỗi (HTTP 400 Bad Request - Đã hủy trước đó)**:
+  ```json
+  {
+    "success": false,
+    "code": "ALREADY_CANCELLED",
+    "message": "Lượt đặt sân này đã được hủy trước đó"
+  }
+  ```
 
 ---
 
-## 6. Hướng dẫn Tester với Postman Collection hiện có
-1. Mở phần mềm **Postman**.
-2. Nhấn nút **Import**, chọn file [badminton-court-booking.postman_collection.json](file:///Users/vanhuy/Desktop/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/testing/Postman/badminton-court-booking.postman_collection.json).
-3. Biến môi trường `baseUrl` trỏ tới: `http://localhost:5001`.
-4. Hiện tại file collection chỉ chứa request `GET {{baseUrl}}/api/health` tương ứng với mã nguồn hiện có. Tester có thể chạy request này để xác nhận backend đang sống với mã HTTP 200 OK.
+## 5. Dữ liệu thử nghiệm mẫu đề xuất (Proposed Test Seed Data)
+
+*(Gắn nhãn: `[Đề xuất kỹ thuật phục vụ kiểm thử — Chưa phải dữ liệu thực tế]`)*:
+* **Tài khoản nhân viên mẫu**:
+  - `phone`: `0901112223`
+  - `password`: `StaffPassword@123`
+* **Danh mục sân mẫu**: Cụm 4 sân (`Sân số 1`, `Sân số 2`, `Sân số 3`, `Sân số 4`).
+* **Khung giờ mẫu**: 16 slot tròn giờ từ `06:00 - 07:00` đến `21:00 - 22:00`.
