@@ -1,24 +1,24 @@
 {
   "info": {
-    "_postman_id": "badminton-api-collection-v1",
-    "name": "Badminton Court Booking System API",
-    "description": "Postman Collection for testing Badminton Court Booking System APIs",
+    "_postman_id": "b8f9c2a0-7d4a-4e2f-9a1b-3c5d7e9f1a2b",
+    "name": "Badminton Court Booking System - Full Workflow API Collection",
+    "description": "Bộ kịch bản kiểm thử tự động toàn trình (End-to-End API Workflow) cho Hệ thống Đặt sân Cầu lông. Chỉ cần bấm 'Run collection' để chạy tuần tự 16 API theo đúng 5 quy trình nghiệp vụ: Khởi tạo -> Đăng ký -> Đăng nhập -> Xem sân & Lịch sân -> Đặt sân -> Hủy đặt sân (Khách hàng & Admin).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "item": [
+  "event": [
     {
-      "name": "Health Check",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/health",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "health"]
-        },
-        "description": "Verify that backend API is online and responding."
-      },
-      "response": []
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Tự động khởi tạo ngày mai (YYYY-MM-DD) và email ngẫu nhiên nếu chưa có",
+          "const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];",
+          "pm.collectionVariables.set('tomorrowDate', tomorrow);",
+          "if (!pm.collectionVariables.get('randomEmail')) {",
+          "    pm.collectionVariables.set('randomEmail', 'user_' + Date.now() + '@gmail.com');",
+          "}"
+        ]
+      }
     }
   ],
   "variable": [
@@ -26,6 +26,679 @@
       "key": "baseUrl",
       "value": "http://localhost:5001",
       "type": "string"
+    },
+    {
+      "key": "tomorrowDate",
+      "value": "2026-10-25",
+      "type": "string"
+    },
+    {
+      "key": "randomEmail",
+      "value": "newcustomer@gmail.com",
+      "type": "string"
+    },
+    {
+      "key": "customerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "101",
+      "type": "string"
+    },
+    {
+      "key": "adminCancelBookingId",
+      "value": "102",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "00. Khởi tạo & Health Check (Setup & Health)",
+      "item": [
+        {
+          "name": "01. [SETUP] Reset dữ liệu kiểm thử về mặc định",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];",
+                  "pm.collectionVariables.set('tomorrowDate', tomorrow);",
+                  "pm.collectionVariables.set('randomEmail', 'tester_' + Date.now() + '@gmail.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Reset dữ liệu thành công', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/reset-data",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "reset-data"]
+            },
+            "description": "Khôi phục toàn bộ dữ liệu mẫu (6 sân, 4 tài khoản, 5 đơn đặt sân) về trạng thái chuẩn trước khi chạy luồng kiểm thử."
+          },
+          "response": []
+        },
+        {
+          "name": "02. [HEALTH] Kiểm tra trạng thái hoạt động API",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Hệ thống hoạt động bình thường (status = ok)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.status).to.eql('ok');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Kiểm tra NFR-AVAIL-01: Endpoint /health phản hồi trạng thái máy chủ."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01. Quy trình 1 - Đăng ký tài khoản (Registration)",
+      "item": [
+        {
+          "name": "03. [REGISTER] Đăng ký tài khoản Khách hàng mới",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('randomEmail', 'user_' + Date.now() + '@gmail.com');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201 - Đăng ký tài khoản mới thành công', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.user.role).to.eql('CUSTOMER');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Nguyễn Văn Kiểm Thử\",\n  \"email\": \"{{randomEmail}}\",\n  \"password\": \"Customer@123\",\n  \"confirmPassword\": \"Customer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Kiểm thử FR-REG-01, FR-REG-02: Tạo mới tài khoản với role mặc định là CUSTOMER."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02. Quy trình 2 - Đăng nhập & Xác thực (Authentication)",
+      "item": [
+        {
+          "name": "04. [AUTH] Đăng nhập tài khoản Khách hàng (Customer 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Đăng nhập Customer thành công & Lưu JWT Token', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.token).to.be.a('string');",
+                  "    pm.collectionVariables.set('customerToken', json.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer1@gmail.com\",\n  \"password\": \"Customer@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Kiểm thử FR-AUTH-01: Đăng nhập tài khoản khách hàng mẫu và tự động lưu customerToken cho các bước tiếp theo."
+          },
+          "response": []
+        },
+        {
+          "name": "05. [AUTH] Xem thông tin cá nhân Khách hàng hiện tại (/me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về đúng thông tin user từ JWT Token', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.user.email).to.eql('customer1@gmail.com');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Kiểm thử xác thực Bearer Token và lấy thông tin hồ sơ người dùng đang đăng nhập."
+          },
+          "response": []
+        },
+        {
+          "name": "06. [AUTH] Đăng nhập tài khoản Quản trị viên (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Đăng nhập Admin thành công & Lưu Admin Token', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.user.role).to.eql('ADMIN');",
+                  "    pm.collectionVariables.set('adminToken', json.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@badminton.vn\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Đăng nhập tài khoản Admin và lưu adminToken phục vụ quy trình quản trị ở bước cuối."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03. Quy trình 3 - Xem danh sách sân & Lịch trống (Courts & Availability)",
+      "item": [
+        {
+          "name": "07. [COURTS] Xem danh sách toàn bộ 6 sân cầu lông",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về danh sách 6 sân cầu lông', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.length).to.eql(6);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courts"]
+            },
+            "description": "Kiểm thử FR-COURT-01: Lấy danh sách 6 sân cầu lông (5 sân ACTIVE, 1 sân INACTIVE)."
+          },
+          "response": []
+        },
+        {
+          "name": "08. [COURTS] Xem chi tiết thông tin Sân 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về thông tin chi tiết Sân 1', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.id).to.eql(1);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courts/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courts", "1"]
+            },
+            "description": "Kiểm thử FR-COURT-02: Xem thông tin chi tiết của một sân theo ID."
+          },
+          "response": []
+        },
+        {
+          "name": "09. [COURTS] Xem lịch trống 16 khung giờ Sân 1 vào ngày mai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về đủ 16 khung giờ từ 06:00 đến 22:00', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.slots.length).to.eql(16);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courts/1/availability?date={{tomorrowDate}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courts", "1", "availability"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "{{tomorrowDate}}"
+                }
+              ]
+            },
+            "description": "Kiểm thử FR-COURT-03, FR-COURT-04: Tra cứu trạng thái AVAILABLE / BOOKED của 16 khung giờ cố định."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04. Quy trình 4 - Đặt sân & Xem lịch sử (Booking Workflow)",
+      "item": [
+        {
+          "name": "10. [BOOKING] Khách hàng đặt Sân 1 khung 09:00-10:00 ngày mai",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201 - Đặt sân thành công & Lưu bookingId', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.status).to.eql('CONFIRMED');",
+                  "    pm.collectionVariables.set('bookingId', json.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courtId\": 1,\n  \"bookingDate\": \"{{tomorrowDate}}\",\n  \"timeSlot\": \"09:00-10:00\",\n  \"note\": \"Đặt sân tự động qua Postman Collection Runner\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings"]
+            },
+            "description": "Kiểm thử FR-BOOK-01, FR-BOOK-02: Khách hàng đặt khung giờ trống hợp lệ và tự động lưu bookingId."
+          },
+          "response": []
+        },
+        {
+          "name": "11. [BOOKING] Khách hàng đặt thêm Sân 2 khung 10:00-11:00 (để Admin hủy)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 201 - Tạo đơn đặt sân thứ 2 thành công', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.collectionVariables.set('adminCancelBookingId', json.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courtId\": 2,\n  \"bookingDate\": \"{{tomorrowDate}}\",\n  \"timeSlot\": \"10:00-11:00\",\n  \"note\": \"Đơn đặt sân dùng để test chức năng Admin hủy đơn\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings"]
+            },
+            "description": "Tạo thêm một đơn CONFIRMED thứ 2 và lưu vào biến adminCancelBookingId để bước 16 Admin hủy."
+          },
+          "response": []
+        },
+        {
+          "name": "12. [BOOKING] Khách hàng xem danh sách Lịch sử đặt sân của tôi (/me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về danh sách đơn đặt sân của Customer', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "me"]
+            },
+            "description": "Kiểm thử FR-BOOK-04: Khách hàng xem danh sách các lượt đặt sân của chính mình."
+          },
+          "response": []
+        },
+        {
+          "name": "13. [BOOKING] Xem chi tiết đơn đặt sân vừa tạo (:id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Trả về chi tiết đơn đặt sân vừa tạo', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.id).to.eql(Number(pm.collectionVariables.get('bookingId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "{{bookingId}}"]
+            },
+            "description": "Kiểm thử truy vấn thông tin chi tiết của một đơn đặt sân cụ thể theo ID."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05. Quy trình 5 - Hủy đặt sân & Quản trị (Cancellation & Admin)",
+      "item": [
+        {
+          "name": "14. [CANCEL] Khách hàng tự hủy đơn đặt sân trước >= 2 giờ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Khách hàng hủy đơn thành công (status = CANCELLED)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.status).to.eql('CANCELLED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancelReason\": \"Thay đổi lịch thi đấu cá nhân\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/{{bookingId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "{{bookingId}}", "cancel"]
+            },
+            "description": "Kiểm thử FR-CANCEL-01, BUS-CANCEL-01: Khách hàng hủy đơn đặt sân hợp lệ trước giờ bắt đầu >= 2 tiếng."
+          },
+          "response": []
+        },
+        {
+          "name": "15. [ADMIN] Admin xem toàn bộ danh sách đặt sân trên hệ thống",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Admin lấy toàn bộ danh sách booking thành công', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings"]
+            },
+            "description": "Kiểm thử FR-ADMIN-01: Quản trị viên xem toàn bộ đơn đặt sân của tất cả khách hàng."
+          },
+          "response": []
+        },
+        {
+          "name": "16. [ADMIN] Admin hủy điều phối đơn đặt sân tại quầy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200 - Admin hủy đơn đặt sân thành công', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.eql(true);",
+                  "    pm.expect(json.data.status).to.eql('CANCELLED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancelReason\": \"Admin hủy điều phối sân theo yêu cầu tại quầy\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings/{{adminCancelBookingId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings", "{{adminCancelBookingId}}", "cancel"]
+            },
+            "description": "Kiểm thử FR-ADMIN-02: Quản trị viên hủy bất kỳ đơn CONFIRMED nào trên hệ thống."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
