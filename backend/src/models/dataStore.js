@@ -5,7 +5,9 @@ import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DATA_DIR = path.resolve(__dirname, '../../data');
+const DATA_DIR = process.env.VERCEL
+  ? '/tmp/badminton-data'
+  : path.resolve(__dirname, '../../data');
 const DB_FILE_PATH = path.join(DATA_DIR, 'database.json');
 
 // 16 khung giờ hoạt động cố định (06:00 đến 22:00)

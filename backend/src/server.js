@@ -26,6 +26,10 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/courts', courtsRouter);
 app.use('/api/v1/bookings', bookingsRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/v1/auth', authRouter);
+app.use('/v1/courts', courtsRouter);
+app.use('/v1/bookings', bookingsRouter);
+app.use('/v1/admin', adminRouter);
 
 // Root route
 app.get('/', (req, res) => {
@@ -64,8 +68,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
-if (process.env.NODE_ENV !== 'test') {
+// Start server (skip port binding when imported by Vercel serverless runtime)
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(PORT, async () => {
     console.log(`🚀 [Server] Badminton Booking API running at http://localhost:${PORT}`);
     await testConnection();
