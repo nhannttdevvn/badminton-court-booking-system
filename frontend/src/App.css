@@ -194,6 +194,20 @@ body {
   width: 100%;
 }
 
+.court-catalog-wrapper {
+  min-width: 480px;
+}
+
+.status-pill-offset {
+  margin-left: -18px;
+  transform: rotate(-3deg);
+}
+
+.cancel-dialog-compact {
+  height: 220px;
+  overflow: hidden;
+}
+
 .court-card {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);

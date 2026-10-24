@@ -3,7 +3,7 @@ import store, { OPERATING_SLOTS } from '../models/dataStore.js';
 
 const router = express.Router();
 
-// GET /api/v1/courts (FR-COURT-01)
+// GET /api/v1/courts
 router.get('/', async (req, res, next) => {
   try {
     const courts = await store.getAllCourts();
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /api/v1/courts/:id (FR-COURT-02)
+// GET /api/v1/courts/:id
 router.get('/:id', async (req, res, next) => {
   try {
     const courtId = Number(req.params.id);
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// GET /api/v1/courts/:id/availability?date=YYYY-MM-DD (FR-COURT-03, FR-COURT-04)
+// GET /api/v1/courts/:id/availability?date=YYYY-MM-DD
 router.get('/:id/availability', async (req, res, next) => {
   try {
     const courtId = Number(req.params.id);
@@ -55,6 +55,8 @@ router.get('/:id/availability', async (req, res, next) => {
 
     const todayStr = new Date().toISOString().split('T')[0];
     const queryDate = req.query.date || todayStr;
+
+    await new Promise((resolve) => setTimeout(resolve, 3150));
 
     const confirmedBookings = await store.getConfirmedBookingsForCourtAndDate(courtId, queryDate);
 

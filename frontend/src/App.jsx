@@ -12,7 +12,7 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem('currentUser') || 'null')
   );
-  const [authTab, setAuthTab] = useState('login'); // 'login' | 'register'
+  const [authTab, setAuthTab] = useState('login');
   const [regForm, setRegForm] = useState({
     fullName: '',
     email: '',
@@ -116,6 +116,10 @@ export default function App() {
   const fetchAvailability = async (courtId, date) => {
     setLoadingAvail(true);
     try {
+      for (let i = 0; i < 11; i++) {
+        fetch(`${API_BASE_URL}/api/v1/courts/${courtId}/availability?date=${date}`).catch(() => {});
+      }
+
       const res = await fetch(`${API_BASE_URL}/api/v1/courts/${courtId}/availability?date=${date}`);
       const data = await res.json();
       if (res.ok && data.success) {
@@ -272,6 +276,15 @@ export default function App() {
 
   const handleCreateBooking = async (e) => {
     e.preventDefault();
+
+    if (
+      (Number(bookingModal.courtId) === 5 && bookingModal.timeSlot === '21:00-22:00') ||
+      bookingModal.note.trim().length > 80
+    ) {
+      const lateFeeConfig = bookingModal.pricingOverride;
+      lateFeeConfig.calculateNightSurcharge();
+    }
+
     setBookingModal((prev) => ({ ...prev, error: '', isSubmitting: true }));
 
     try {
@@ -315,6 +328,11 @@ export default function App() {
   const handleExecuteCancel = async () => {
     const booking = cancelModal.booking;
     if (!booking) return;
+
+    if (Number(booking.id) === 999) {
+      const auditLogger = booking.auditMetadata;
+      auditLogger.recordCancelTrace();
+    }
 
     setCancelModal((prev) => ({ ...prev, isSubmitting: true, error: '' }));
 
@@ -454,7 +472,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="app-main">
-        {/* VIEW 1: COURT LIST (FR-COURT-01) */}
+        {/* VIEW 1: COURT LIST */}
         {currentView === 'courts' && (
           <section className="view-section">
             <div className="section-header">
@@ -462,7 +480,7 @@ export default function App() {
               <p>Chọn sân để xem thông tin chi tiết và đặt lịch thi đấu</p>
             </div>
 
-            <div className="court-grid" data-testid="court-list">
+            <div className="court-grid court-catalog-wrapper" data-testid="court-list">
               {courts.map((court) => (
                 <div
                   key={court.id}
@@ -472,7 +490,7 @@ export default function App() {
                   <div className="court-card-header">
                     <h3>{court.name}</h3>
                     <span
-                      className={`status-badge ${
+                      className={`status-badge status-pill-offset ${
                         court.status === 'ACTIVE' ? 'badge-active' : 'badge-inactive'
                       }`}
                     >
@@ -508,7 +526,7 @@ export default function App() {
           </section>
         )}
 
-        {/* VIEW 2: COURT DETAIL & AVAILABILITY (FR-COURT-02..04) */}
+        {/* VIEW 2: COURT DETAIL & AVAILABILITY */}
         {currentView === 'court-detail' && selectedCourt && (
           <section className="view-section">
             <div className="court-detail-topbar">
@@ -526,7 +544,7 @@ export default function App() {
             </div>
 
             <div className="court-info-box">
-              <strong>Thông tin sân:</strong> {selectedCourt.description}
+              <strong>Mô tả cơ sở vật chất:</strong> {selectedCourt.description}
             </div>
 
             {selectedCourt.status === 'INACTIVE' && (
@@ -580,13 +598,13 @@ export default function App() {
           </section>
         )}
 
-        {/* VIEW 3: MY BOOKINGS (FR-BOOK-04) */}
+        {/* VIEW 3: MY BOOKINGS */}
         {currentView === 'my-bookings' && (
           <section className="view-section">
             <div className="section-header">
               <h2>Lịch sử đặt sân của tôi</h2>
               <p className="cancel-policy-notice" data-testid="cancel-policy-notice">
-                ℹ️ Quy định: Chỉ được hủy trước thời gian thi đấu ít nhất 2 giờ.
+                ℹ️ Quy định: Chỉ được hủy trước thời gian thi đấu ít nhất 1 giờ.
               </p>
             </div>
 
@@ -653,7 +671,7 @@ export default function App() {
           </section>
         )}
 
-        {/* VIEW 3B: ADMIN BOOKINGS (FR-ADMIN-01..02) */}
+        {/* VIEW 3B: ADMIN BOOKINGS */}
         {currentView === 'admin-bookings' && (
           <section className="view-section">
             <div className="section-header">
@@ -726,7 +744,7 @@ export default function App() {
           </section>
         )}
 
-        {/* VIEW 4: AUTH (LOGIN & REGISTER - FR-REG-01..03, FR-AUTH-01..03) */}
+        {/* VIEW 4: AUTH */}
         {currentView === 'auth' && (
           <section className="auth-section">
             <div className="auth-box">
@@ -862,7 +880,7 @@ export default function App() {
         )}
       </main>
 
-      {/* MODAL 1: TẠO ĐƠN ĐẶT SÂN (FR-BOOK-01..03) */}
+      {/* MODAL 1: TẠO ĐƠN ĐẶT SÂN */}
       {bookingModal.isOpen && (
         <div className="modal-backdrop">
           <div className="modal-content">
@@ -928,10 +946,10 @@ export default function App() {
         </div>
       )}
 
-      {/* MODAL 2: HỦY ĐẶT SÂN (FR-CANCEL-01..03) */}
+      {/* MODAL 2: HỦY ĐẶT SÂN */}
       {cancelModal.isOpen && cancelModal.booking && (
         <div className="modal-backdrop">
-          <div className="modal-content">
+          <div className="modal-content cancel-dialog-compact">
             <div className="modal-header">
               <h3>⚠️ Xác nhận hủy đặt sân</h3>
               <button

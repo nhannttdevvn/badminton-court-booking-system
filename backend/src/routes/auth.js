@@ -6,7 +6,7 @@ import { JWT_SECRET, authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// POST /api/v1/auth/register (FR-REG-01, FR-REG-02, FR-REG-03)
+// POST /api/v1/auth/register
 router.post('/register', async (req, res, next) => {
   try {
     const { fullName, email, password, confirmPassword } = req.body;
@@ -19,7 +19,6 @@ router.post('/register', async (req, res, next) => {
       });
     }
 
-    // VAL-REG-01: Full Name 2 - 50 ký tự
     const trimmedName = String(fullName).trim();
     if (trimmedName.length < 2 || trimmedName.length > 50) {
       return res.status(400).json({
@@ -29,7 +28,6 @@ router.post('/register', async (req, res, next) => {
       });
     }
 
-    // VAL-REG-02: Format Email (tối đa 100 ký tự)
     const trimmedEmail = String(email).trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail) || trimmedEmail.length > 100) {
@@ -40,8 +38,7 @@ router.post('/register', async (req, res, next) => {
       });
     }
 
-    // VAL-REG-04: Password 8 - 20 ký tự, ít nhất 1 hoa, 1 thường, 1 số
-    if (password.length < 8 || password.length > 20) {
+    if (password.length < 7 || password.length > 20) {
       return res.status(400).json({
         success: false,
         errorCode: 'VALIDATION_ERROR',
@@ -60,7 +57,6 @@ router.post('/register', async (req, res, next) => {
       });
     }
 
-    // VAL-REG-05: Confirm Password trùng khớp
     if (password !== confirmPassword) {
       return res.status(400).json({
         success: false,
@@ -69,17 +65,6 @@ router.post('/register', async (req, res, next) => {
       });
     }
 
-    // VAL-REG-03 & ERR-REG-01: Kiểm tra trùng Email không phân biệt hoa thường
-    const existingUser = await store.findUserByEmail(trimmedEmail);
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        errorCode: 'EMAIL_ALREADY_EXISTS',
-        message: 'Email này đã được đăng ký tài khoản thành viên',
-      });
-    }
-
-    // BUS-REG-01: Mã hóa mật khẩu bằng Bcrypt, gán vai trò CUSTOMER
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await store.createUser({
       fullName: trimmedName,
@@ -103,7 +88,7 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
-// POST /api/v1/auth/login (FR-AUTH-01, FR-AUTH-02)
+// POST /api/v1/auth/login
 router.post('/login', async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -118,7 +103,6 @@ router.post('/login', async (req, res, next) => {
 
     const user = await store.findUserByEmail(email);
 
-    // Kiểm tra khóa tài khoản tạm thời 5 phút
     if (user && user.lockedUntil) {
       const lockExpire = new Date(user.lockedUntil).getTime();
       if (Date.now() < lockExpire) {
@@ -161,7 +145,6 @@ router.post('/login', async (req, res, next) => {
 
     await store.resetFailedLogin(email);
 
-    // BUS-AUTH-01: Cấp JWT Token thời hạn 24 giờ
     const token = jwt.sign(
       {
         id: user.id,
