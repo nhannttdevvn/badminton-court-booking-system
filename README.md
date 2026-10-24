@@ -1,182 +1,121 @@
 # Badminton Court Booking System
-> **Hệ thống đặt sân cầu lông trực tuyến**
+> **Hệ thống đặt sân cầu lông trực tuyến phục vụ kiểm thử phần mềm và đánh giá hiệu năng**  
+> Học phần: Đánh giá hiệu năng / Software Testing – Đồ án cá nhân (Semester 7)
 
 ---
 
-## 1. Giới thiệu & Mục tiêu hệ thống
+## 1. Giới thiệu và Mục tiêu dự án
 
-**Badminton Court Booking System** là hệ thống quản lý và đặt sân cầu lông trực tuyến, được thiết kế nhằm giải quyết bài toán đặt lịch, quản lý tình trạng sân trống theo thời gian thực, loại bỏ tình trạng trùng lịch (double booking) và tối ưu hóa doanh thu cho các chủ sân cầu lông.
+**Badminton Court Booking System** là ứng dụng web được xây dựng nhằm phục vụ đồ án học phần Kiểm thử phần mềm và Đánh giá hiệu năng.
 
-### Mục tiêu chính:
-- **Tự động hóa quy trình đặt sân**: Người chơi dễ dàng tra cứu lịch trống, đặt lịch mọi lúc mọi nơi.
-- **Minh bạch hóa quản lý**: Giúp chủ sân và nhân viên theo dõi trạng thái sân, doanh thu và lịch đặt theo thời gian thực.
-- **Trải nghiệm người dùng mượt mà**: Giao diện trực quan, tốc độ xử lý nhanh chóng, thông báo rõ ràng.
-
----
-
-## 2. Các nhóm người dùng (3 Roles)
-
-Hệ thống phân quyền chi tiết cho 3 đối tượng người dùng chính:
-
-1. **Khách hàng (Customer)**:
-   - Đăng ký, đăng nhập tài khoản.
-   - Tìm kiếm sân theo ngày, khung giờ, chi nhánh và loại sân (sân thảm tiêu chuẩn, sân VIP).
-   - Đặt sân trực tuyến, thanh toán hoặc giữ chỗ tạm thời.
-   - Xem lịch sử đặt sân, nhận thông báo xác nhận và thực hiện hủy lịch đặt sân khi có nhu cầu.
-
-2. **Nhân viên (Staff)**:
-   - Xem lịch đặt sân tổng quan trong ngày/tuần theo dạng Timeline.
-   - Check-in, check-out cho khách khi đến sân.
-   - Tiếp nhận và tạo lịch đặt sân trực tiếp tại quầy cho khách vãng lai.
-   - Hỗ trợ đổi giờ hoặc hủy lịch đặt theo yêu cầu của khách tại sân.
-
-3. **Quản trị viên (Admin)**:
-   - Quản trị toàn bộ hệ thống: danh mục sân, số lượng sân, bảng giá theo khung giờ (giờ thường / giờ vàng / cuối tuần).
-   - Quản lý tài khoản người dùng và phân quyền nhân viên.
-   - Báo cáo thống kê doanh thu, tỷ lệ lấp đầy sân và xu hướng giờ chơi.
-   - Cấu hình các chính sách hệ thống (thời gian hủy sân tối thiểu, tỷ lệ cọc/hoàn tiền).
+### Mục tiêu cốt lõi:
+- **Đặc tả chuẩn mực**: Mọi yêu cầu được hệ thống hóa rõ ràng theo chuẩn `FR/VAL/BUS/DIS/ERR/NFR`, dễ kiểm tra và xác minh.
+- **Dễ dàng kiểm thử tự động**:
+  - API RESTful chuẩn JSON UTF-8 với mã lỗi ổn định, hỗ trợ kiểm thử tự động bằng **Postman / Newman**.
+  - Toàn bộ các thành phần giao diện frontend được gắn thuộc tính `data-testid` cố định, hỗ trợ kiểm thử E2E bằng **Puppeteer**.
+  - Các endpoint tải được thiết kế để đo lường hiệu năng bằng **Apache JMeter**.
+- **Tính toàn vẹn dữ liệu**: Đảm bảo kiểm soát đặt lịch và dữ liệu thử nghiệm xác định (Deterministic Seed Data).
 
 ---
 
-## 3. Các chức năng chính của hệ thống
+## 2. Phạm vi nghiệp vụ (5 Nhóm chức năng)
 
-| Phân hệ | Chức năng | Mô tả |
-| :--- | :--- | :--- |
-| **Xác thực (Auth)** | Đăng ký / Đăng nhập / Phân quyền | Quản lý phiên làm việc bảo mật với JWT |
-| **Quản lý sân (Court)** | Xem danh sách & Chi tiết sân | Hiển thị loại sân, hình ảnh, tiện ích, bảng giá |
-| **Lịch sân (Schedule)** | Tra cứu slot trống | Hiển thị trực quan các khung giờ khả dụng theo thời gian thực |
-| **Đặt sân (Booking)** | Tạo & Quản lý đơn đặt | Chọn slot, tính tổng tiền, tạo đơn và xác nhận đơn |
-| **Hủy sân (Cancellation)** | Hủy đặt sân & Hoàn cọc | Kiểm tra điều kiện thời gian hủy và tự động giải phóng slot |
-| **Check-in (Check-in)** | Điểm danh vào sân | Xác thực mã đặt sân và đổi trạng thái sử dụng sân |
-| **Báo cáo (Dashboard)** | Thống kê doanh thu | Biểu đồ doanh thu theo ngày/tháng và tần suất đặt sân |
+Hệ thống tập trung chuyên sâu vào đúng 5 nhóm chức năng nghiệp vụ, không mở rộng sang các phân hệ thương mại ngoài phạm vi:
+1. **Đăng ký tài khoản (Register)**.
+2. **Đăng nhập hệ thống (Login)**.
+3. **Xem sân và lịch sân trống (View Court & Availability)**.
+4. **Đặt sân (Booking)**.
+5. **Hủy đặt sân (Cancel Booking)**.
 
 ---
 
-## 4. Ba luồng nghiệp vụ chính (Core Flows)
+## 3. Các vai trò người dùng (3 User Roles)
 
-### 4.1. Luồng đặt sân (Booking Flow)
-1. **Khách hàng** truy cập hệ thống, chọn ngày và xem danh sách các sân cùng các khung giờ trống (slots).
-2. **Khách hàng** chọn sân và một hoặc nhiều khung giờ mong muốn.
-3. Hệ thống kiểm tra tính khả dụng của slot và khóa tạm thời (hold slot) trong quá trình xác nhận.
-4. **Khách hàng** xác nhận thông tin đặt sân (và phương thức thanh toán/cọc).
-5. Hệ thống lưu thông tin đặt sân vào cơ sở dữ liệu với trạng thái `CONFIRMED`, gửi xác nhận thành công cho khách hàng và cập nhật slot sang trạng thái đã đặt.
-
-### 4.2. Luồng hủy đặt sân (Cancel Booking Flow)
-1. **Khách hàng** vào mục "Lịch sử đặt sân" và chọn đơn đặt sân muốn hủy.
-2. Hệ thống kiểm tra chính sách hủy (ví dụ: yêu cầu hủy trước giờ chơi ít nhất 12h hoặc 24h).
-3. Nếu hợp lệ, hệ thống cập nhật trạng thái đơn thành `CANCELLED`.
-4. Hệ thống giải phóng slot đã đặt để sân trở lại trạng thái khả dụng cho khách hàng khác tiếp tục đặt.
-5. Gửi thông báo xác nhận hủy sân thành công tới khách hàng.
-
-### 4.3. Luồng quản lý sân (Court Management Flow)
-1. **Admin/Staff** đăng nhập vào trang quản trị và truy cập mục "Quản lý sân".
-2. **Admin** có thể thêm mới sân, chỉnh sửa tên sân, loại thảm, trạng thái hoạt động (bảo trì/hoạt động).
-3. **Admin** cấu hình bảng giá động theo các khung giờ (ví dụ: sáng 80.000đ/h, tối giờ vàng 150.000đ/h).
-4. Hệ thống áp dụng ngay bảng giá và cấu hình mới vào bảng tra cứu và tính tiền đặt sân cho toàn hệ thống.
+1. **Khách vãng lai (Guest)**:
+   - Xem danh sách sân, thông tin chi tiết từng sân.
+   - Xem bảng lịch các khung giờ còn trống / đã đặt theo ngày.
+   - Đăng ký tài khoản thành viên mới hoặc Đăng nhập.
+2. **Khách hàng (Customer)**:
+   - Toàn bộ quyền của Guest.
+   - Tạo đơn đặt sân cho các khung giờ còn trống trong tương lai.
+   - Xem danh sách lịch sử đơn đặt của chính mình (`My Bookings`).
+   - Hủy đơn đặt sân của chính mình khi còn ít nhất 2 giờ trước giờ bắt đầu thi đấu.
+3. **Chủ hệ thống / Quản trị viên (Admin)**:
+   - Xem toàn bộ danh sách đơn đặt sân của tất cả khách hàng trong hệ thống.
+   - Hủy đơn đặt sân khi có yêu cầu xử lý trực tiếp tại quầy hoặc sự cố sân bãi.
+   - Thực thi API khôi phục dữ liệu kiểm thử về mặc định (`Reset Test Data`).
 
 ---
 
-## 5. Công nghệ sử dụng (Tech Stack)
+## 4. Kiến trúc công nghệ
 
-- **Frontend**:
-  - React 18
-  - Vite (Build Tool & Dev Server siêu tốc)
-  - CSS3 hiện đại, Responsive UI
-- **Backend**:
-  - Node.js (Runtime)
-  - Express.js (RESTful API Framework)
-  - `cors`, `dotenv`
-- **Database**:
-  - MySQL 8.x
-  - Driver `mysql2` hỗ trợ Promise/Connection Pooling
-- **Testing & QA**:
-  - Postman (API Testing)
-  - Puppeteer (E2E & UI Automation)
-  - Apache JMeter (Load & Stress Performance Testing)
-
----
-
-## 6. Cấu trúc thư mục dự án (Project Structure)
-
-```
-badminton-court-booking-system/
-├── backend/                  # Mã nguồn Backend (Node.js + Express)
-│   ├── src/
-│   │   ├── config/           # Cấu hình kết nối MySQL pool
-│   │   │   └── db.js
-│   │   ├── routes/           # Định tuyến API
-│   │   │   └── health.js     # Health check route
-│   │   └── server.js         # Entrypoint khởi chạy server Express
-│   ├── .env.example          # Biến môi trường mẫu Backend
-│   └── package.json          # Dependencies & scripts Backend
-├── frontend/                 # Mã nguồn Frontend (React + Vite)
-│   ├── public/               # Tài nguyên tĩnh
-│   ├── src/
-│   │   ├── assets/           # Hình ảnh, biểu tượng
-│   │   ├── App.jsx           # Trang chủ Badminton Court Booking System
-│   │   ├── App.css           # Giao diện trang chủ
-│   │   └── main.jsx          # Entrypoint React
-│   ├── .env.example          # Biến môi trường mẫu Frontend
-│   ├── index.html            # File HTML chính
-│   ├── package.json          # Dependencies & scripts Frontend
-│   └── vite.config.js        # Cấu hình Vite
-├── docs/                     # Tài liệu thiết kế & phân tích hệ thống
-│   ├── URD/                  # User Requirements Document
-│   ├── SRS/                  # Software Requirements Specification
-│   ├── API/                  # Tài liệu đặc tả API
-│   ├── Diagrams/             # Sơ đồ kiến trúc, tuần tự (Mermaid)
-│   └── Bug-Manifest/         # Bảng theo dõi và quản lý lỗi
-├── testing/                  # Tài liệu và kịch bản kiểm thử
-│   ├── Test-Plan/            # Kế hoạch kiểm thử tổng thể
-│   ├── Test-Cases/           # Bộ test cases chi tiết
-│   ├── Bug-Reports/          # Mẫu báo cáo lỗi cho QA
-│   ├── Postman/              # Postman Collections test API
-│   ├── Puppeteer/            # Kịch bản kiểm thử E2E tự động
-│   └── JMeter/               # Kịch bản kiểm thử tải & hiệu năng
-├── .env.example              # Biến môi trường mẫu toàn dự án
-├── .gitignore                # Cấu hình bỏ qua file trong Git
-├── LICENSE                   # Giấy phép MIT
-└── README.md                 # Tài liệu giới thiệu dự án
+```text
+badminton-court-performance-evaluation/
+├── backend/            # Máy chủ Node.js + Express RESTful API (Port 5001)
+├── frontend/           # Ứng dụng Single Page Application React 19 + Vite (Port 5173)
+├── docs/               # Toàn bộ hồ sơ tài liệu đặc tả (URD, SRS, API, Test Accounts, Handover)
+├── TAILIEU/            # Biểu mẫu học phần của Giảng viên
+└── testing/            # Kịch bản kiểm thử (Postman, Puppeteer, JMeter, Smoke test)
 ```
 
+- **Backend**: Node.js, Express, Bcrypt.js, JSON Web Token (JWT), Local Persistent Data Store (`backend/data/database.json`).
+- **Frontend**: React 19, Vite, Vanilla CSS, tích hợp `data-testid` cố định.
+- **API Base URL**: `http://localhost:5001/api/v1`
+- **Health Check**: `http://localhost:5001/health`
+
 ---
 
-## 7. Hướng dẫn cài đặt & Khởi chạy dự án
+## 5. Hướng dẫn cài đặt và Khởi chạy
 
-### Yêu cầu tiên quyết
-- Node.js >= 18.x
-- npm >= 9.x
-- MySQL Server (tùy chọn để kết nối DB)
+### 5.1. Yêu cầu môi trường
+- Node.js version 18.x hoặc 20.x trở lên.
+- Trình quản lý gói `npm`.
 
-### 1. Khởi chạy Backend API
+### 5.2. Khởi động Backend API
 ```bash
-# 1. Di chuyển vào thư mục backend
 cd backend
-
-# 2. Cài đặt thư viện
 npm install
-
-# 3. Tạo file cấu hình môi trường
-cp .env.example .env
-
-# 4. Khởi chạy server
+npm run seed
 npm run dev
-# Server sẽ lắng nghe tại: http://localhost:5001
-# Kiểm tra API: http://localhost:5001/api/health
 ```
+> Máy chủ API sẽ lắng nghe tại: `http://localhost:5001`.  
+> Kiểm tra trạng thái máy chủ tại: `http://localhost:5001/health`.
 
-### 2. Khởi chạy Frontend
+### 5.3. Khởi động Frontend Web
 ```bash
-# 1. Di chuyển vào thư mục frontend
 cd frontend
-
-# 2. Cài đặt thư viện
 npm install
-
-# 3. Tạo file cấu hình môi trường
-cp .env.example .env
-
-# 4. Khởi chạy giao diện
 npm run dev
-# Mở trình duyệt tại: http://localhost:5173
 ```
+> Ứng dụng giao diện web sẽ chạy tại: `http://localhost:5173`.
+
+### 5.4. Khôi phục dữ liệu kiểm thử (Reset Data)
+```bash
+# Cách 1: Gọi qua HTTP API
+curl -X POST http://localhost:5001/api/v1/admin/reset-data
+
+# Cách 2: Chạy script từ thư mục backend
+cd backend && npm run reset-db
+```
+
+---
+
+## 6. Dữ liệu thử nghiệm và Tài khoản mẫu
+
+Hệ thống cung cấp sẵn 4 tài khoản thử nghiệm xác định:
+- **Admin**: `admin@badminton.vn` / `Admin@123`
+- **Customer 1**: `customer1@gmail.com` / `Customer@123`
+- **Customer 2**: `customer2@gmail.com` / `Customer@123`
+- **Customer 3**: `customer3@gmail.com` / `Customer@123`
+
+---
+
+## 7. Danh mục Tài liệu Dự án trong thư mục `docs/`
+
+1. [Ma trận ánh xạ Rubric](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/00_REQUIREMENT_MAPPING.md) (`00_REQUIREMENT_MAPPING.md`).
+2. [Tài liệu Yêu cầu Người sử dụng (URD)](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/01_URD_BadmintonBooking.docx) (`01_URD_BadmintonBooking.docx` & `.md`).
+3. [Đặc tả Yêu cầu Phần mềm (SRS)](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/02_SRS_BadmintonBooking.docx) (`02_SRS_BadmintonBooking.docx` & `.md`).
+4. [Tài liệu Đặc tả API](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/03_API_DOCUMENTATION.md) (`03_API_DOCUMENTATION.md`).
+5. [Tài khoản thử nghiệm và Dữ liệu mẫu](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/04_TEST_ACCOUNTS.md) (`04_TEST_ACCOUNTS.md`).
+6. [Biên bản Bàn giao Hệ thống](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/05_HANDOVER.md) (`05_HANDOVER.md`).
+7. [Checklist tự kiểm tra trước khi nộp](file:///Volumes/TRANSCEND/MacNhan/NhanNguyen/Semeter_7/badminton-court-performance-evaluation/docs/06_SUBMISSION_CHECKLIST.md) (`06_SUBMISSION_CHECKLIST.md`).

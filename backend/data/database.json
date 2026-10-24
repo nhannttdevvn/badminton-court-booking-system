@@ -1,0 +1,185 @@
+{
+  "courts": [
+    {
+      "id": 1,
+      "name": "Sân 1",
+      "type": "Thảm Enlio Tiêu Chuẩn",
+      "pricePerHour": 120000,
+      "status": "ACTIVE",
+      "description": "Sân thảm chống trượt chuẩn thi đấu phong trào"
+    },
+    {
+      "id": 2,
+      "name": "Sân 2",
+      "type": "Thảm Enlio Tiêu Chuẩn",
+      "pricePerHour": 120000,
+      "status": "ACTIVE",
+      "description": "Sân thảm tiêu chuẩn, ánh sáng chống chói"
+    },
+    {
+      "id": 3,
+      "name": "Sân 3",
+      "type": "Thảm Yonex Thi Đấu",
+      "pricePerHour": 150000,
+      "status": "ACTIVE",
+      "description": "Sân thảm Yonex cao cấp độ nảy chuẩn giải đấu"
+    },
+    {
+      "id": 4,
+      "name": "Sân 4",
+      "type": "Thảm Yonex Thi Đấu",
+      "pricePerHour": 150000,
+      "status": "ACTIVE",
+      "description": "Sân thảm Yonex cao cấp, góc nhìn thoáng"
+    },
+    {
+      "id": 5,
+      "name": "Sân 5",
+      "type": "Thảm Alite Phong Trào",
+      "pricePerHour": 100000,
+      "status": "ACTIVE",
+      "description": "Sân tập luyện phong trào kinh tế"
+    },
+    {
+      "id": 6,
+      "name": "Sân 6",
+      "type": "Thảm Alite Phong Trào",
+      "pricePerHour": 100000,
+      "status": "INACTIVE",
+      "description": "Đang bảo trì hệ thống chiếu sáng"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "fullName": "Chủ Sân Quản Trị",
+      "email": "admin@badminton.vn",
+      "password": "$2b$10$OcxgfX87Q1lKhL9Hzbt5XecaLoZBex6FipCKUabj2ZPfuYuH68.LS",
+      "role": "ADMIN",
+      "failedAttempts": 0,
+      "lockedUntil": null,
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 2,
+      "fullName": "Nguyễn Văn An",
+      "email": "customer1@gmail.com",
+      "password": "$2b$10$O2qfSBQhwafH2Xq8diww4.gTKWOH8ObrAHAlhPquFms9YsXwv//y2",
+      "role": "CUSTOMER",
+      "failedAttempts": 0,
+      "lockedUntil": null,
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 3,
+      "fullName": "Trần Thị Bình",
+      "email": "customer2@gmail.com",
+      "password": "$2b$10$O2qfSBQhwafH2Xq8diww4.gTKWOH8ObrAHAlhPquFms9YsXwv//y2",
+      "role": "CUSTOMER",
+      "failedAttempts": 0,
+      "lockedUntil": null,
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 4,
+      "fullName": "Lê Hoàng Cường",
+      "email": "customer3@gmail.com",
+      "password": "$2b$10$O2qfSBQhwafH2Xq8diww4.gTKWOH8ObrAHAlhPquFms9YsXwv//y2",
+      "role": "CUSTOMER",
+      "failedAttempts": 0,
+      "lockedUntil": null,
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    }
+  ],
+  "bookings": [
+    {
+      "id": 101,
+      "bookingCode": "BK-SAMPLE-01",
+      "courtId": 1,
+      "courtName": "Sân 1",
+      "userId": 2,
+      "customerName": "Nguyễn Văn An",
+      "customerEmail": "customer1@gmail.com",
+      "bookingDate": "2026-10-25",
+      "timeSlot": "08:00-09:00",
+      "startTime": "08:00",
+      "endTime": "09:00",
+      "totalPrice": 120000,
+      "note": "Lịch tập luyện buổi sáng",
+      "status": "CONFIRMED",
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 102,
+      "bookingCode": "BK-SAMPLE-02",
+      "courtId": 2,
+      "courtName": "Sân 2",
+      "userId": 3,
+      "customerName": "Trần Thị Bình",
+      "customerEmail": "customer2@gmail.com",
+      "bookingDate": "2026-10-25",
+      "timeSlot": "18:00-19:00",
+      "startTime": "18:00",
+      "endTime": "19:00",
+      "totalPrice": 120000,
+      "note": "Giao lưu câu lạc bộ buổi tối",
+      "status": "CONFIRMED",
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 103,
+      "bookingCode": "BK-SAMPLE-03",
+      "courtId": 3,
+      "courtName": "Sân 3",
+      "userId": 2,
+      "customerName": "Nguyễn Văn An",
+      "customerEmail": "customer1@gmail.com",
+      "bookingDate": "2026-10-24",
+      "timeSlot": "21:00-22:00",
+      "startTime": "21:00",
+      "endTime": "22:00",
+      "totalPrice": 150000,
+      "note": "Đơn đặt sân trong ngày",
+      "status": "CONFIRMED",
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    },
+    {
+      "id": 104,
+      "bookingCode": "BK-SAMPLE-04",
+      "courtId": 1,
+      "courtName": "Sân 1",
+      "userId": 2,
+      "customerName": "Nguyễn Văn An",
+      "customerEmail": "customer1@gmail.com",
+      "bookingDate": "2026-10-23",
+      "timeSlot": "19:00-20:00",
+      "startTime": "19:00",
+      "endTime": "20:00",
+      "totalPrice": 120000,
+      "note": "Lịch sử đơn đã hủy",
+      "status": "CANCELLED",
+      "cancelledAt": "2026-10-23T14:17:55.173Z",
+      "createdAt": "2026-10-23T14:17:55.173Z"
+    },
+    {
+      "id": 999,
+      "bookingCode": "BK-SPECIAL-999",
+      "courtId": 4,
+      "courtName": "Sân 4",
+      "userId": 2,
+      "customerName": "Nguyễn Văn An",
+      "customerEmail": "customer1@gmail.com",
+      "bookingDate": "2026-10-25",
+      "timeSlot": "14:00-15:00",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "totalPrice": 150000,
+      "note": "Đặt sân giao hữu định kỳ",
+      "status": "CONFIRMED",
+      "createdAt": "2026-10-24T14:17:55.173Z"
+    }
+  ],
+  "bookingCounter": 1000,
+  "userCounter": 5,
+  "updatedAt": "2026-10-24T14:17:55.173Z"
+}

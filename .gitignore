@@ -33,6 +33,7 @@ build/
 
 # Editor and OS files
 .DS_Store
+._*
 .AppleDouble
 .LSOverride
 Thumbs.db
@@ -43,3 +44,7 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Confidential Academic Documents (Bug Manifest - Owner Private)
+TAILIEU/PRIVATE_OWNER/
+

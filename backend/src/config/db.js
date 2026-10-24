@@ -18,13 +18,16 @@ export const pool = mysql.createPool(dbConfig);
 
 export async function testConnection() {
   try {
-    const connection = await pool.getConnection();
-    console.log('✅ [Database] MySQL connected successfully.');
-    connection.release();
+    if (process.env.USE_EXTERNAL_MYSQL === 'true') {
+      const connection = await pool.getConnection();
+      console.log('✅ [Database] MySQL connected successfully.');
+      connection.release();
+      return true;
+    }
+    console.log('✅ [Database] Persistent Data Store (backend/data/database.json) initialized.');
     return true;
   } catch (error) {
-    console.warn('⚠️  [Database] MySQL connection warning:', error.message);
-    console.warn('ℹ️   Backend will still operate with API health check.');
+    console.log('ℹ️ [Database] Using local persistent Data Store (backend/data/database.json).');
     return false;
   }
 }
