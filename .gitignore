@@ -48,3 +48,7 @@ Thumbs.db
 # Confidential Academic Documents (Bug Manifest - Owner Private)
 TAILIEU/PRIVATE_OWNER/
 
+
+# Legacy JSON data store (replaced by MongoDB)
+backend/data/
+/Mau_02_Bug_Manifest_*.xlsx

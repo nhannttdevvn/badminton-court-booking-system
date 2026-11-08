@@ -47,7 +47,7 @@ Phạm vi hệ thống được giữ tinh gọn và chỉ xoay quanh **05 nhóm
 ```text
 badminton-court-performance-evaluation/
 ├── backend/                  # Máy chủ Node.js + Express RESTful API (Port 5001)
-│   ├── data/database.json    # Cơ sở dữ liệu JSON bền vững
+│   ├── src/config/db.js      # Kết nối MongoDB Atlas (biến MONGODB_URI)
 │   ├── scripts/              # Script khởi tạo (seed.js) và khôi phục dữ liệu (reset-db.js)
 │   └── src/                  # Mã nguồn routes, middleware, models, server.js
 ├── frontend/                 # Ứng dụng React 19 + Vite SPA (Port 5173)

@@ -104,9 +104,9 @@ router.post('/login', async (req, res, next) => {
     const user = await store.findUserByEmail(email);
 
     if (user && user.lockedUntil) {
-      const lockExpire = new Date(user.lockedUntil).getTime();
+      const lockExpire = user.lockedUntil;
       if (Date.now() < lockExpire) {
-        const remainingSec = Math.ceil((lockExpire - Date.now()) / 1000);
+        const remainingSec = Math.ceil((new Date(lockExpire).getTime() - Date.now()) / 1000);
         return res.status(401).json({
           success: false,
           errorCode: 'AUTH_LOCKED',

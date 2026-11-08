@@ -7,6 +7,7 @@ import courtsRouter from './routes/courts.js';
 import bookingsRouter from './routes/bookings.js';
 import adminRouter from './routes/admin.js';
 import { testConnection } from './config/db.js';
+import store from './models/dataStore.js';
 
 dotenv.config();
 
@@ -72,7 +73,9 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(PORT, async () => {
     console.log(`🚀 [Server] Badminton Booking API running at http://localhost:${PORT}`);
-    await testConnection();
+    if (await testConnection()) {
+      await store.ready();
+    }
   });
 }
 

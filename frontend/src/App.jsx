@@ -9,6 +9,10 @@ const API_BASE_URL =
     ? 'http://localhost:5001'
     : '');
 
+// Đổi YYYY-MM-DD sang dd/mm/yyyy để hiển thị
+const formatViewDate = (dateStr) =>
+  new Date(dateStr).toISOString().slice(0, 10).split('-').reverse().join('/');
+
 export default function App() {
   // Navigation: 'courts' | 'court-detail' | 'my-bookings' | 'admin-bookings' | 'auth'
   const [currentView, setCurrentView] = useState('courts');
@@ -122,10 +126,6 @@ export default function App() {
   const fetchAvailability = async (courtId, date) => {
     setLoadingAvail(true);
     try {
-      for (let i = 0; i < 11; i++) {
-        fetch(`${API_BASE_URL}/api/v1/courts/${courtId}/availability?date=${date}`).catch(() => {});
-      }
-
       const res = await fetch(`${API_BASE_URL}/api/v1/courts/${courtId}/availability?date=${date}`);
       const data = await res.json();
       if (res.ok && data.success) {
@@ -282,15 +282,6 @@ export default function App() {
 
   const handleCreateBooking = async (e) => {
     e.preventDefault();
-
-    if (
-      (Number(bookingModal.courtId) === 5 && bookingModal.timeSlot === '21:00-22:00') ||
-      bookingModal.note.trim().length > 80
-    ) {
-      const lateFeeConfig = bookingModal.pricingOverride;
-      lateFeeConfig.calculateNightSurcharge();
-    }
-
     setBookingModal((prev) => ({ ...prev, error: '', isSubmitting: true }));
 
     try {
@@ -321,7 +312,8 @@ export default function App() {
 
       setBookingModal((prev) => ({ ...prev, isOpen: false, isSubmitting: false }));
       showToast(data.message || 'Đặt sân thành công!', 'success');
-      fetchAvailability(selectedCourt.id, selectedDate);
+      setSelectedDate(tomorrowDateStr);
+      fetchAvailability(selectedCourt.id, tomorrowDateStr);
     } catch (err) {
       setBookingModal((prev) => ({
         ...prev,
@@ -334,11 +326,6 @@ export default function App() {
   const handleExecuteCancel = async () => {
     const booking = cancelModal.booking;
     if (!booking) return;
-
-    if (Number(booking.id) === 999) {
-      const auditLogger = booking.auditMetadata;
-      auditLogger.recordCancelTrace();
-    }
 
     setCancelModal((prev) => ({ ...prev, isSubmitting: true, error: '' }));
 
@@ -496,7 +483,7 @@ export default function App() {
                   <div className="court-card-header">
                     <h3>{court.name}</h3>
                     <span
-                      className={`status-badge status-pill-offset ${
+                      className={`status-badge ${
                         court.status === 'ACTIVE' ? 'badge-active' : 'badge-inactive'
                       }`}
                     >
@@ -550,7 +537,7 @@ export default function App() {
             </div>
 
             <div className="court-info-box">
-              <strong>Mô tả cơ sở vật chất:</strong> {selectedCourt.description}
+              <strong>Thông tin sân:</strong> {selectedCourt.description}
             </div>
 
             {selectedCourt.status === 'INACTIVE' && (
@@ -575,6 +562,10 @@ export default function App() {
                 <span className="box-booked"></span> Đã đặt
               </span>
             </div>
+
+            <p className="viewing-date-label" data-testid="viewing-date">
+              Lịch sân ngày <strong>{formatViewDate(selectedDate)}</strong>
+            </p>
 
             {loadingAvail ? (
               <div className="loading-spinner">Đang tải trạng thái lịch sân...</div>

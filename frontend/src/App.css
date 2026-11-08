@@ -198,11 +198,6 @@ body {
   min-width: 480px;
 }
 
-.status-pill-offset {
-  margin-left: -18px;
-  transform: rotate(-3deg);
-}
-
 .cancel-dialog-compact {
   height: 220px;
   overflow: hidden;
@@ -295,7 +290,7 @@ body {
 
 .btn-select-court:hover {
   background-color: var(--primary-color);
-  color: #fff;
+  color: var(--primary-color);
 }
 
 /* Court Detail Topbar */
@@ -351,6 +346,11 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.viewing-date-label {
+  margin: 12px 0 0;
+  color: var(--text-muted);
 }
 
 .date-input {

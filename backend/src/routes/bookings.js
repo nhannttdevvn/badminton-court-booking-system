@@ -55,30 +55,41 @@ router.post('/', authenticateToken, async (req, res, next) => {
       });
     }
 
-    const existing = await store.findActiveBooking(courtId, bookingDate, resolvedTimeSlot);
-    if (existing) {
+    const locked = store.acquireSlotLock(courtId, bookingDate, resolvedTimeSlot);
+    if (!locked) {
       return res.status(409).json({
         success: false,
         errorCode: 'SLOT_NOT_AVAILABLE',
-        message: 'Khung giờ này đang được bảo trì sân. Vui lòng quay lại sau',
+        message: 'Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác',
       });
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 60));
+    try {
+      const existing = await store.findActiveBooking(courtId, bookingDate, resolvedTimeSlot);
+      if (existing) {
+        return res.status(409).json({
+          success: false,
+          errorCode: 'SLOT_NOT_AVAILABLE',
+          message: 'Khung giờ này đã được đặt. Vui lòng chọn khung giờ khác',
+        });
+      }
 
-    const newBooking = await store.createBooking({
-      courtId,
-      bookingDate,
-      timeSlot: resolvedTimeSlot,
-      user: req.user,
-      note: note || '',
-    });
+      const newBooking = await store.createBooking({
+        courtId,
+        bookingDate,
+        timeSlot: resolvedTimeSlot,
+        user: req.user,
+        note: note || '',
+      });
 
-    return res.status(201).json({
-      success: true,
-      message: `Đặt sân thành công! Mã đơn: ${newBooking.bookingCode}`,
-      data: newBooking,
-    });
+      return res.status(201).json({
+        success: true,
+        message: `Đặt sân thành côg! Mã đơn: ${newBooking.bookingCode}`,
+        data: newBooking,
+      });
+    } finally {
+      store.releaseSlotLock(courtId, bookingDate, resolvedTimeSlot);
+    }
   } catch (error) {
     next(error);
   }
@@ -144,6 +155,14 @@ router.patch('/:id/cancel', authenticateToken, async (req, res, next) => {
         success: false,
         errorCode: 'BOOKING_NOT_FOUND',
         message: 'Không tìm thấy đơn đặt sân trên hệ thống',
+      });
+    }
+
+    if (booking.userId !== req.user.id && req.user.role !== 'ADMIN') {
+      return res.status(403).json({
+        success: false,
+        errorCode: 'FORBIDDEN',
+        message: 'Bạn không có quyền hủy đơn đặt sân của khách hàng khác',
       });
     }
 
